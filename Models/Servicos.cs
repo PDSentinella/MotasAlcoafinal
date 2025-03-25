@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using motasAlcoafinal.Models;
 
-namespace motasAlcoa.Models
+namespace motasAlcoafinal.Models
 {
     ///
     /// <summary>
@@ -8,36 +9,17 @@ namespace motasAlcoa.Models
     /// </summary>
     public class Servicos
     {
-        /// <summary>
-        /// Identificador do servico
-        /// </summary>
-        public int Id { get; set; } 
+        public int Id { get; set; }
+        public int? MotocicletaId { get; set; }
+        public string? Descricao { get; set; }
+        public DateTime? Data { get; set; }
+        public decimal? CustoTotal { get; set; }
 
-        /// <summary>
-        /// Descrição do que é necessário ser feito no serviço
-        /// </summary>
-        public string Descricao { get; set; }
+        // Relacionamento: Um serviço pertence a uma motocicleta
+        public Motocicletas? Motocicleta { get; set; }
 
-        /// <summary>
-        /// Valor total que será pago pelo serviço
-        /// </summary>
-        public decimal CustoTotal { get; set; }
-
-        /// <summary>
-        /// Data em que o serviço é criado
-        /// </summary>
-        public DateTime DataServico { get; set; }
-
-        /// <summary>
-        /// Identificador do motociclo ao qual vai ser feito o serviço
-        /// </summary>
-        [ForeignKey(nameof(Motociclo))]
-        public int MotocicloFK { get; set; }
-
-        /// <summary>
-        /// FK para os motociclos
-        /// </summary>
-        public Motocicletas? Motociclo { get; set; }
+        // Relacionamento: Um serviço pode usar várias peças
+        public ICollection<ServicoPecas>? ServicoPecas { get; set; }
 
 
     }

@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using motasAlcoafinal.Models;
 
-namespace motasAlcoa.Models
+namespace motasAlcoafinal.Models
 {
     ///
     /// <summary>
@@ -9,51 +10,17 @@ namespace motasAlcoa.Models
     /// </summary>
     public class Motocicletas
     {
-
-        /// <summary>
-        /// Identificador do motociclo
-        /// </summary>
-        [Key]
         public int Id { get; set; }
+        public int? ClienteId { get; set; }
+        public string ?  Marca { get; set; }
+        public string ? Modelo { get; set; }
+        public int ?  Ano { get; set; }
+        public string ? Placa { get; set; }
 
-        /// <summary>
-        /// A marca do motociclo
-        /// </summary>
-        public string Marca { get; set; }
-
-        /// <summary>
-        /// Modelo do motociclo
-        /// </summary>
-        public string Modelo { get; set; }  
-
-        /// <summary>
-        /// Ano de fabricação do motociclo
-        /// </summary>
-        public string Ano {  get; set; }
-
-        /// <summary>
-        /// Placa de identificação do motociclo
-        /// </summary>
-        public string Matricula { get; set; }
-
-
-        /// <summary>
-        /// Identificador do cliente ao qual o motociclo está associado
-        /// </summary>
-        [ForeignKey(nameof(Cliente))]
-        public int? ClienteFK { get; set; }
-
-
-        /// <summary>
-        /// FK para os clientes
-        /// </summary>
+        // Relacionamento: Uma motocicleta pertence a um cliente
         public Clientes? Cliente { get; set; }
 
-
-        /// <summary>
-        /// Lista dos serviços que estão associados a um motociclo
-        /// </summary>
-        public ICollection<Servicos> ListaServicos { get; set; }
-
+        // Relacionamento: Uma motocicleta pode ter vários serviços
+        public ICollection<Servicos>? Servicos { get; set; }
     }
 }
