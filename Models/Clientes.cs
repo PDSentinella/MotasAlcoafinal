@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using motasAlcoafinal.Models;
 
-namespace motasAlcoa.Models
+namespace motasAlcoafinal.Models
 {
     ///
     /// <summary>
@@ -8,37 +9,13 @@ namespace motasAlcoa.Models
     /// </summary>
     public class Clientes
     {
-        /// <summary>
-        /// Identificador do cliente
-        /// </summary>
-        [Key]
         public int Id { get; set; }
+        public string ? Nome { get; set; }
+        public string ? Telefone { get; set; }
+        public string ? Email { get; set; }
+        public string ? Endereco { get; set; }
 
-
-        /// <summary>
-        /// Nome do cliente
-        /// </summary>
-        public string Nome { get; set; }  
-
-        /// <summary>
-        /// Email associado ao cliente
-        /// </summary>
-        public string Email { get; set; }  
-
-        /// <summary>
-        /// Contacto telefônico do cliente
-        /// </summary>
-        public string Telemovel { get; set; }
-
-        /// <summary>
-        /// Respetiva morada do cliente
-        /// </summary>
-        public string Morada { get; set; }
-
-
-        /// <summary>
-        /// Lista dos motociclos que estão associados a um cliente
-        /// </summary>
-        public ICollection<Motocicletas> ListaMotociclos { get; set; }
+        // Relacionamento: Um cliente pode ter várias motocicletas
+        public ICollection<Motocicletas>? Motocicletas { get; set; }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using motasAlcoafinal.Models;
 
-namespace motasAlcoa.Models
+namespace motasAlcoafinal.Models
 {
     ///
     /// <summary>
@@ -11,40 +12,15 @@ namespace motasAlcoa.Models
     /// </summary>
     public class ServicoPecas
     {
-        /// <summary>
-        /// Identificador do serviço que está associado 
-        /// ao relacionamento entre serviços e peças
-        /// </summary>
-        [Key, Column(Order = 0)]
-        [ForeignKey(nameof(Servico))]
-        public int ServicosFK { get; set; }
+        public int Id { get; set; }
+        public int?  ServicoId { get; set; }
+        public int? PecaId { get; set; }
+        public int? QuantidadeUsada { get; set; }
 
-        /// <summary>
-        /// FK para os serviços
-        /// </summary>
-        public Servicos Servico { get; set; }
+        // Relacionamento: Um ServiçoPeca pertence a um Serviço
+        public Servicos? Servico { get; set; }
 
-
-        /// <summary>
-        /// Identificador da peça que está associada    
-        /// ao relacionamento entre serviços e peças
-        /// </summary>
-        [Key, Column(Order = 1)]
-        [ForeignKey(nameof(Peca))]
-        public int PecaFK { get; set; }
-
-        /// <summary>
-        /// FK para as peças
-        /// </summary>
-        public Pecas Peca {  get; set; }
-
-        /// <summary>
-        /// Quantidade da peça usada no serviço
-        /// </summary>
-        [Required]
-        public int QuantidadeUsada { get; set; }
-
-
-
+        // Relacionamento: Um ServiçoPeca pertence a uma Peça
+        public Pecas? Peca { get; set; }
     }
 }
