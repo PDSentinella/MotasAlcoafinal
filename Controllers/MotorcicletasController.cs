@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MotasAlcoafinal.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MotasAlcoafinal.Controllers
 {
@@ -46,6 +47,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
             return View(motocicleta);
         }
 
@@ -78,15 +80,16 @@ namespace MotasAlcoafinal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
             return View(motocicleta);
         }
         private bool MotocicletaExists(int id)
         {
             return _context.Motocicletas.Any(e => e.Id == id);
         }
-
         public IActionResult Create()
         {
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome");
             return View();
         }
 
@@ -100,6 +103,7 @@ namespace MotasAlcoafinal.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
             return View(motocicleta);
         }
     }
