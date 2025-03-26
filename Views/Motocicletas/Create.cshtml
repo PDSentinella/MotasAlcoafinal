@@ -1,0 +1,32 @@
+﻿@model motasAlcoafinal.Models.Motocicletas
+@{
+    ViewData["Title"] = "Criar Motocicleta";
+}
+
+<h2>Criar Motocicleta</h2>
+
+<form asp-action="Create" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Marca" class="control-label"></label>
+        <input asp-for="Marca" class="form-control" />
+        <span asp-validation-for="Marca" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Modelo" class="control-label"></label>
+        <input asp-for="Modelo" class="form-control" />
+        <span asp-validation-for="Modelo" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Ano" class="control-label"></label>
+        <input asp-for="Ano" class="form-control" />
+        <span asp-validation-for="Ano" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Placa" class="control-label"></label>
+        <input asp-for="Placa" class="form-control" />
+        <span asp-validation-for="Placa" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Criar" class="btn btn-primary" />
+    </div>
+</form>

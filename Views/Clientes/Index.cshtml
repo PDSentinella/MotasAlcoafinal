@@ -25,6 +25,10 @@
                 <td>@cliente.Telefone</td>
                 <td>@cliente.Email</td>
                 <td>@cliente.Endereco</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@cliente.Id" class="btn btn-info">Detalhes</a>
+                    <a asp-action="Edit" asp-route-id="@cliente.Id" class="btn btn-warning">Editar</a>
+                </td>
             </tr>
         }
     </tbody>
