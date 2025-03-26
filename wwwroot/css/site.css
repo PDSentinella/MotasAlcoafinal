@@ -18,5 +18,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    padding-top: 56px; /* Ajuste o valor conforme a altura da sua navbar */
 }
+

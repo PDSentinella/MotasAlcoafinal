@@ -1,21 +1,24 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
 
 namespace MotasAlcoafinal.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
 
     public IActionResult Index()
     {
-        return View();
+        var cliente = new Clientes
+        {
+            Nome = "Nome do Cliente",
+            Telefone = "123456789",
+            Email = "cliente@example.com",
+            Endereco = "Endereço do Cliente"
+        };
+        return View(cliente);
     }
 
     public IActionResult Privacy()
