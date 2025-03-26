@@ -33,8 +33,22 @@
         <dd class="col-sm-10">
             @Model.Placa
         </dd>
+        <dt class="col-sm-2">
+            Cliente
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Cliente != null)
+            {
+                <a asp-action="Details" asp-controller="Clientes" asp-route-id="@Model.Cliente.Id">@Model.Cliente.Nome</a>
+            }
+            else
+            {
+                <span>Sem cliente associado</span>
+            }
+        </dd>
     </dl>
 </div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
     <a asp-action="Index" class="btn btn-secondary">Voltar</a>

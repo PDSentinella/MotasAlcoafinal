@@ -22,3 +22,11 @@ body {
     padding-top: 56px; /* Ajuste o valor conforme a altura da sua navbar */
 }
 
+.table-responsive {
+    width: 100%;
+}
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+}

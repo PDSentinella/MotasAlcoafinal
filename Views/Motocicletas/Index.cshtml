@@ -8,13 +8,15 @@
     <a class="btn btn-primary" asp-controller="Motocicletas" asp-action="Create">Criar Motocicleta</a>
 </div>
 
-<table class="table table-striped">
+<table class="table table-striped table-responsive">
     <thead>
         <tr>
             <th>Marca</th>
             <th>Modelo</th>
             <th>Ano</th>
             <th>Placa</th>
+            <th>Cliente</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +27,7 @@
                 <td>@motocicleta.Modelo</td>
                 <td>@motocicleta.Ano</td>
                 <td>@motocicleta.Placa</td>
+                <td>@motocicleta.Cliente?.Nome</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@motocicleta.Id" class="btn btn-info">Detalhes</a>
                     <a asp-action="Edit" asp-route-id="@motocicleta.Id" class="btn btn-warning">Editar</a>

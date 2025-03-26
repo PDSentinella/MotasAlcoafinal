@@ -30,14 +30,15 @@ namespace MotasAlcoafinal.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes
+                .Include(c => c.Motocicletas)
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (cliente == null)
             {
                 return NotFound();
             }
             return View(cliente);
         }
-
         public async Task<IActionResult> Edit(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);

@@ -21,6 +21,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
             var motocicletas = await _context.Motocicletas
+                .Include(m => m.Cliente)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -33,7 +34,9 @@ namespace MotasAlcoafinal.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            var motocicleta = await _context.Motocicletas.FindAsync(id);
+            var motocicleta = await _context.Motocicletas
+                .Include(m => m.Cliente)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (motocicleta == null)
             {
                 return NotFound();
