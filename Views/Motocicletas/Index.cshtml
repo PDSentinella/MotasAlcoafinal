@@ -25,6 +25,8 @@
                 <td>@motocicleta.Modelo</td>
                 <td>@motocicleta.Ano</td>
                 <td>@motocicleta.Placa</td>
+                <a asp-action="Details" asp-route-id="@motocicleta.Id" class="btn btn-info">Detalhes</a>
+                <a asp-action="Edit" asp-route-id="@motocicleta.Id" class="btn btn-warning">Editar</a>
             </tr>
         }
     </tbody>

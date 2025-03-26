@@ -1,37 +1,37 @@
-﻿@model motasAlcoafinal.Models.Clientes
+﻿@model motasAlcoafinal.Models.Motocicletas
 @{
-    ViewData["Title"] = "Detalhes do Cliente";
+    ViewData["Title"] = "Detalhes da Motocicleta";
 }
 
-<h2>Detalhes do Cliente</h2>
+<h2>Detalhes da Motocicleta</h2>
 
 <div>
-    <h4>Cliente</h4>
+    <h4>Motocicleta</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            Nome
+            Marca
         </dt>
         <dd class="col-sm-10">
-            @Model.Nome
+            @Model.Marca
         </dd>
         <dt class="col-sm-2">
-            Telefone
+            Modelo
         </dt>
         <dd class="col-sm-10">
-            @Model.Telefone
+            @Model.Modelo
         </dd>
         <dt class="col-sm-2">
-            Email
+            Ano
         </dt>
         <dd class="col-sm-10">
-            @Model.Email
+            @Model.Ano
         </dd>
         <dt class="col-sm-2">
-            Endereço
+            Placa
         </dt>
         <dd class="col-sm-10">
-            @Model.Endereco
+            @Model.Placa
         </dd>
     </dl>
 </div>
