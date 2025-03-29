@@ -14,18 +14,27 @@ namespace MotasAlcoafinal.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
-            var clientes = await _context.Clientes
+            var clientes = from c in _context.Clientes
+                           select c;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                clientes = clientes.Where(s => s.Nome.Contains(searchString) || s.Email.Contains(searchString));
+            }
+
+            var totalClientes = await clientes.CountAsync();
+            var clientesList = await clientes
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            var totalClientes = await _context.Clientes.CountAsync();
             ViewBag.TotalPages = (int)Math.Ceiling(totalClientes / (double)pageSize);
             ViewBag.CurrentPage = pageNumber;
+            ViewBag.SearchString = searchString;
 
-            return View(clientes);
+            return View(clientesList);
         }
 
         public async Task<IActionResult> Details(int id)
