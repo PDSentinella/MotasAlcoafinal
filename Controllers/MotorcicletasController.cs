@@ -18,19 +18,28 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
-            var motocicletas = await _context.Motocicletas
+            var motocicletas = from m in _context.Motocicletas
+                               select m;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                motocicletas = motocicletas.Where(s => s.Marca.Contains(searchString) || s.Modelo.Contains(searchString));
+            }
+
+            var totalMotocicletas = await motocicletas.CountAsync();
+            var motocicletasList = await motocicletas
                 .Include(m => m.Cliente)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            var totalMotocicletas = await _context.Motocicletas.CountAsync();
             ViewBag.TotalPages = (int)Math.Ceiling(totalMotocicletas / (double)pageSize);
             ViewBag.CurrentPage = pageNumber;
+            ViewBag.SearchString = searchString;
 
-            return View(motocicletas);
+            return View(motocicletasList);
         }
         public async Task<IActionResult> Details(int id)
         {
