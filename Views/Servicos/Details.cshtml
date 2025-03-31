@@ -49,6 +49,9 @@
         <tr>
             <th>Nome</th>
             <th>Quantidade Usada</th>
+            <th>Quantidade em Estoque</th>
+            <th>Disponível</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -57,6 +60,21 @@
             <tr>
                 <td>@servicoPeca.Peca.Nome</td>
                 <td>@servicoPeca.QuantidadeUsada</td>
+                <td>@servicoPeca.Peca.QuantidadeEstoque</td>
+                <td>
+                    @if (servicoPeca.Peca.QuantidadeEstoque >= servicoPeca.QuantidadeUsada)
+                    {
+                        <span class="text-success">Sim</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">Não</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditPeca" asp-route-id="@servicoPeca.Id" class="btn btn-warning">Editar</a>
+                    <a asp-action="DeletePeca" asp-route-id="@servicoPeca.Id" class="btn btn-danger">Excluir</a>
+                </td>
             </tr>
         }
     </tbody>
@@ -66,4 +84,5 @@
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
     <a asp-action="Index" class="btn btn-secondary">Voltar</a>
     <a asp-action="AddPeca" asp-route-id="@Model.Id" class="btn btn-success">Adicionar Peça</a>
+    <a asp-action="EncomendarTodos" asp-route-id="@Model.Id" class="btn btn-warning">Encomendar Todos</a>
 </div>
