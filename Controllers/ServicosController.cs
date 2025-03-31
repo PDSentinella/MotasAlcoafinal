@@ -159,14 +159,100 @@ namespace MotasAlcoafinal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPeca(ServicoPecas servicoPeca)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && servicoPeca.ServicoId!=null)
             {
-                _context.ServicoPecas.Add(servicoPeca);
+                var ser = new ServicoPecas
+                {
+                    ServicoId = servicoPeca.ServicoId,
+                    PecaId = servicoPeca.PecaId,
+                    QuantidadeUsada = servicoPeca.QuantidadeUsada
+                };
+                _context.ServicoPecas.Add(ser);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
             }
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
             return View(servicoPeca);
+        }
+        public async Task<IActionResult> EditPeca(int id)
+        {
+            var servicoPeca = await _context.ServicoPecas
+                .Include(sp => sp.Peca)
+                .FirstOrDefaultAsync(sp => sp.Id == id);
+            if (servicoPeca == null)
+            {
+                return NotFound();
+            }
+            ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
+            return View(servicoPeca);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPeca(ServicoPecas servicoPeca)
+        {
+            if (ModelState.IsValid && servicoPeca.PecaId!=null)
+            {
+                var ser = new ServicoPecas
+                {
+                    Id = servicoPeca.Id,
+                    ServicoId = servicoPeca.ServicoId,
+                    PecaId = servicoPeca.PecaId,
+                    QuantidadeUsada = servicoPeca.QuantidadeUsada
+                };
+                _context.Update(ser);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+            }
+            ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
+            return View(servicoPeca);
+        }
+
+        public async Task<IActionResult> DeletePeca(int id)
+        {
+            var servicoPeca = await _context.ServicoPecas.FindAsync(id);
+            if (servicoPeca == null)
+            {
+                return NotFound();
+            }
+            _context.ServicoPecas.Remove(servicoPeca);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+        }
+        public async Task<IActionResult> EncomendarTodos(int id)
+        {
+            var servico = await _context.Servicos
+                .Include(s => s.ServicoPecas)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (servico == null)
+            {
+                return NotFound();
+            }
+
+            var encomenda = new Encomendas
+            {
+                DataPedido = DateTime.Now,
+                Status = Encomendas.Estados.Pendente
+            };
+
+            _context.Encomendas.Add(encomenda);
+            await _context.SaveChangesAsync();
+
+            foreach (var servicoPeca in servico.ServicoPecas)
+            {
+                var encomendaPeca = new EncomendaPecas
+                {
+                    EncomendaId = encomenda.Id,
+                    PecaId = servicoPeca.PecaId,
+                    Quantidade = servicoPeca.QuantidadeUsada
+                };
+                _context.EncomendaPecas.Add(encomendaPeca);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Encomendas", new { id = encomenda.Id });
         }
         private bool ServicoExists(int id)
         {

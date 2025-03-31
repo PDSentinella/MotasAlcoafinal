@@ -26,35 +26,10 @@
         <select asp-for="MotocicletaId" class="form-control" asp-items="ViewBag.Motocicletas"></select>
         <span asp-validation-for="MotocicletaId" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label class="control-label">Peças</label>
-        <select multiple class="form-control" asp-items="ViewBag.Pecas" name="pecasIds"></select>
-    </div>
-    <div class="form-group">
-        <label class="control-label">Quantidades</label>
-        <input type="number" class="form-control" name="quantidades" />
-    </div>
+    <br/>
     <div class="form-group">
         <input type="submit" value="Salvar" class="btn btn-primary" />
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
 
-<h3>Peças Associadas</h3>
-<table class="table table-striped table-responsive">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Quantidade Usada</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var servicoPeca in Model.ServicoPecas)
-        {
-            <tr>
-                <td>@servicoPeca.Peca.Nome</td>
-                <td>@servicoPeca.QuantidadeUsada</td>
-            </tr>
-        }
-    </tbody>
-</table>

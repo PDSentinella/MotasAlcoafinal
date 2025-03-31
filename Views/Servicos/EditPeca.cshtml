@@ -1,0 +1,26 @@
+﻿@model motasAlcoafinal.Models.ServicoPecas
+@{
+    ViewData["Title"] = "Editar Peça";
+}
+
+<h2>Editar Peça</h2>
+
+<form asp-action="EditPeca" method="post" class="form-horizontal">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ServicoId" />
+    <input type="hidden" asp-for="PecaId" />
+    <div class="form-group">
+        <label asp-for="PecaId" class="control-label"></label>
+        <select asp-for="PecaId" class="form-control" asp-items="ViewBag.Pecas" disabled></select>
+        <span asp-validation-for="PecaId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="QuantidadeUsada" class="control-label"></label>
+        <input asp-for="QuantidadeUsada" class="form-control" />
+        <span asp-validation-for="QuantidadeUsada" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Salvar" class="btn btn-primary" />
+        <a asp-action="Details" asp-route-id="@Model.ServicoId" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
