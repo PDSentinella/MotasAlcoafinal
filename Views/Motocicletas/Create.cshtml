@@ -1,0 +1,50 @@
+﻿@model motasAlcoafinal.Models.Motocicletas
+@{
+    ViewData["Title"] = "Criar Motocicleta";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="fw-bold"><i class="fas fa-motorcycle"></i> Criar Motocicleta</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="Marca" class="form-label fw-bold">Marca</label>
+                    <input asp-for="Marca" class="form-control" placeholder="Digite a marca..." />
+                    <span asp-validation-for="Marca" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Modelo" class="form-label fw-bold">Modelo</label>
+                    <input asp-for="Modelo" class="form-control" placeholder="Digite o modelo..." />
+                    <span asp-validation-for="Modelo" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Ano" class="form-label fw-bold">Ano</label>
+                    <input asp-for="Ano" class="form-control" type="number" placeholder="Digite o ano..." />
+                    <span asp-validation-for="Ano" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Placa" class="form-label fw-bold">Placa</label>
+                    <input asp-for="Placa" class="form-control" placeholder="Digite a placa..." />
+                    <span asp-validation-for="Placa" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ClienteId" class="form-label fw-bold">Cliente</label>
+                    <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.Clientes">
+                        <option value="">Selecione um cliente...</option>
+                    </select>
+                    <span asp-validation-for="ClienteId" class="text-danger"></span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary shadow"><i class="fas fa-arrow-left"></i> Voltar</a>
+                    <button type="submit" class="btn btn-primary shadow"><i class="fas fa-save"></i> Criar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Adicionando FontAwesome para os ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

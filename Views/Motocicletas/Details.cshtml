@@ -1,0 +1,48 @@
+﻿@model motasAlcoafinal.Models.Motocicletas
+@{
+    ViewData["Title"] = "Detalhes da Motocicleta";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="fw-bold"><i class="fas fa-motorcycle"></i> Detalhes da Motocicleta</h2>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Marca:</dt>
+                <dd class="col-sm-9">@Model.Marca</dd>
+
+                <dt class="col-sm-3 fw-bold">Modelo:</dt>
+                <dd class="col-sm-9">@Model.Modelo</dd>
+
+                <dt class="col-sm-3 fw-bold">Ano:</dt>
+                <dd class="col-sm-9">@Model.Ano</dd>
+
+                <dt class="col-sm-3 fw-bold">Placa:</dt>
+                <dd class="col-sm-9">@Model.Placa</dd>
+
+                <dt class="col-sm-3 fw-bold">Cliente:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Cliente != null)
+                    {
+                        <a asp-action="Details" asp-controller="Clientes" asp-route-id="@Model.Cliente.Id" class="btn btn-outline-info">
+                            <i class="fas fa-user"></i> @Model.Cliente.Nome
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sem cliente associado</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-secondary shadow"><i class="fas fa-arrow-left"></i> Voltar</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary shadow"><i class="fas fa-edit"></i> Editar</a>
+        </div>
+    </div>
+</div>
+
+<!-- Adicionando FontAwesome para os ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
