@@ -2,43 +2,49 @@
 @{
     ViewData["Title"] = "Criar Peça";
 }
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="fw-bold">Criar Nova Peça</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="">
+                <div class="mb-3">
+                    <label asp-for="Nome" class="form-label fw-bold">Nome da Peça</label>
+                    <input asp-for="Nome" class="form-control" placeholder="Ex: Filtro de Óleo" required />
+                    <span asp-validation-for="Nome" class="text-danger"></span>
+                </div>
 
-<h2 class="mb-4">Criar Nova Peça</h2>
+                <div class="mb-3">
+                    <label asp-for="Descricao" class="form-label fw-bold">Descrição</label>
+                    <textarea asp-for="Descricao" class="form-control" rows="3" placeholder="Breve descrição da peça"></textarea>
+                    <span asp-validation-for="Descricao" class="text-danger"></span>
+                </div>
 
-<form asp-action="Create" method="post" class="p-3 border rounded shadow-sm bg-light">
-    <div class="mb-3">
-        <label asp-for="Nome" class="form-label fw-bold">Nome da Peça</label>
-        <input asp-for="Nome" class="form-control" placeholder="Ex: Filtro de Óleo" required />
-        <span asp-validation-for="Nome" class="text-danger"></span>
+                <div class="mb-3">
+                    <label asp-for="Preco" class="form-label fw-bold">Preço (R$)</label>
+                    <input asp-for="Preco" class="form-control" type="number" step="0.01" min="0" placeholder="Ex: 199.99" required />
+                    <span asp-validation-for="Preco" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="QuantidadeEstoque" class="form-label fw-bold">Quantidade em Estoque</label>
+                    <input asp-for="QuantidadeEstoque" class="form-control" type="number" min="0" placeholder="Ex: 20" required />
+                    <span asp-validation-for="QuantidadeEstoque" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Criar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Descricao" class="form-label fw-bold">Descrição</label>
-        <textarea asp-for="Descricao" class="form-control" rows="3" placeholder="Breve descrição da peça"></textarea>
-        <span asp-validation-for="Descricao" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Preco" class="form-label fw-bold">Preço (R$)</label>
-        <input asp-for="Preco" class="form-control" type="number" step="0.01" min="0" placeholder="Ex: 199.99" required />
-        <span asp-validation-for="Preco" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="QuantidadeEstoque" class="form-label fw-bold">Quantidade em Estoque</label>
-        <input asp-for="QuantidadeEstoque" class="form-control" type="number" min="0" placeholder="Ex: 20" required />
-        <span asp-validation-for="QuantidadeEstoque" class="text-danger"></span>
-    </div>
-
-    <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-plus"></i> Criar
-        </button>
-        <a asp-action="Index" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
-    </div>
-</form>
+</div>
 
 <!-- Adicionando FontAwesome para ícones -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
