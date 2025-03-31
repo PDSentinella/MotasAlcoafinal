@@ -1,59 +1,24 @@
-﻿@model motasAlcoafinal.Models.Servicos
+﻿@model motasAlcoafinal.Models.ServicoPecas
 @{
-    ViewData["Title"] = "Criar Serviço";
+    ViewData["Title"] = "Adicionar Peça";
 }
 
-<h2>Criar Serviço</h2>
+<h2>Adicionar Peça</h2>
 
-<form asp-action="Create" method="post" class="form-horizontal">
+<form asp-action="AddPeca" method="post" class="form-horizontal">
+    <input type="hidden" asp-for="ServicoId" />
     <div class="form-group">
-        <label asp-for="Descricao" class="control-label"></label>
-        <input asp-for="Descricao" class="form-control" />
-        <span asp-validation-for="Descricao" class="text-danger"></span>
+        <label asp-for="PecaId" class="control-label"></label>
+        <select asp-for="PecaId" class="form-control" asp-items="ViewBag.Pecas"></select>
+        <span asp-validation-for="PecaId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Data" class="control-label"></label>
-        <input asp-for="Data" class="form-control" />
-        <span asp-validation-for="Data" class="text-danger"></span>
+        <label asp-for="QuantidadeUsada" class="control-label"></label>
+        <input asp-for="QuantidadeUsada" class="form-control" />
+        <span asp-validation-for="QuantidadeUsada" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="CustoTotal" class="control-label"></label>
-        <input asp-for="CustoTotal" class="form-control" />
-        <span asp-validation-for="CustoTotal" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="MotocicletaId" class="control-label">Motocicleta</label>
-        <select asp-for="MotocicletaId" class="form-control" asp-items="ViewBag.Motocicletas"></select>
-        <span asp-validation-for="MotocicletaId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label class="control-label">Peças</label>
-        <select multiple class="form-control" asp-items="ViewBag.Pecas" name="pecasIds"></select>
-    </div>
-    <div class="form-group">
-        <label class="control-label">Quantidades</label>
-        <input type="number" class="form-control" name="quantidades" />
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Criar" class="btn btn-primary" />
+        <input type="submit" value="Salvar" class="btn btn-primary" />
+        <a asp-action="Details" asp-route-id="@Model.ServicoId" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
-
-<h3>Peças Associadas</h3>
-<table class="table table-striped table-responsive">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Quantidade Usada</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var servicoPeca in Model.ServicoPecas)
-        {
-            <tr>
-                <td>@servicoPeca.Peca.Nome</td>
-                <td>@servicoPeca.QuantidadeUsada</td>
-            </tr>
-        }
-    </tbody>
-</table>
