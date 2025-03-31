@@ -4,20 +4,23 @@
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="fw-bold text-primary">📋 Lista de Clientes</h2>
-        <a class="btn btn-success btn-lg shadow" asp-controller="Clientes" asp-action="Create">
+        <a class="btn btn-success shadow" asp-controller="Clientes" asp-action="Create">
             <i class="fas fa-user-plus"></i> Criar Cliente
         </a>
     </div>
 
     <!-- Barra de Pesquisa -->
-    <form asp-controller="Clientes" asp-action="Index" method="get" class="mb-3">
-        <div class="input-group">
-            <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar clientes..." />
-            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
-        </div>
-    </form>
+    <div class="card shadow p-3 mb-4">
+        <form asp-controller="Clientes" asp-action="Index" method="get" >
+            <div class="input-group">
+                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar clientes..." />
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
+            </div>
+        </form>
+    </div>
+
 
     <!-- Tabela de Clientes -->
     <div class="table-responsive shadow rounded">
