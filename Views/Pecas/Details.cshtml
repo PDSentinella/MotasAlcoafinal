@@ -1,0 +1,43 @@
+﻿@model motasAlcoafinal.Models.Pecas
+@{
+    ViewData["Title"] = "Detalhes da Peça";
+}
+
+<h2 class="mb-4">Detalhes da Peça</h2>
+
+<div class="card shadow-sm p-4 bg-light">
+    <h4 class="fw-bold">@Model.Nome</h4>
+    <hr />
+
+    <dl class="row">
+        <dt class="col-sm-3">Descrição:</dt>
+        <dd class="col-sm-9">
+            @if (!string.IsNullOrEmpty(Model.Descricao))
+            {
+                @Model.Descricao
+            }
+            else
+            {
+                <span class="text-muted">Sem descrição</span>
+            }
+        </dd>
+
+        <dt class="col-sm-3">Preço:</dt>
+        <dd class="col-sm-9">@Model.Preco?.ToString("C")</dd>
+
+        <dt class="col-sm-3">Quantidade em Estoque:</dt>
+        <dd class="col-sm-9">@Model.QuantidadeEstoque</dd>
+    </dl>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+        <i class="fas fa-edit"></i> Editar
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+</div>
+
+<!-- Adicionando FontAwesome para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
