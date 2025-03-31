@@ -1,11 +1,13 @@
 ﻿
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using motasAlcoafinal.Models;
 
 namespace MotasAlcoafinal.Models
 {
-    public class MotasAlcoaContext : DbContext
+    public class MotasAlcoaContext : IdentityDbContext<IdentityUser>
     {
         public MotasAlcoaContext(DbContextOptions<MotasAlcoaContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
