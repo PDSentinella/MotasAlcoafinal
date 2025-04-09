@@ -13,8 +13,27 @@ namespace motasAlcoafinal.Models
     public class ServicoPecas
     {
         public int Id { get; set; }
+
+        /// <summary>
+        /// Identificador do serviço que está associado 
+        /// ao relacionamento entre serviços e peças
+        /// </summary>
+
+        [ForeignKey(nameof(Servico))]
         public int?  ServicoId { get; set; }
+
+        /// <summary>
+        /// Identificador da peça que está associada    
+        /// ao relacionamento entre serviços e peças
+        /// </summary>
+
+        [ForeignKey(nameof(Peca))]
         public int? PecaId { get; set; }
+
+        /// <summary>
+        /// Quantidade da peça usada no serviço
+        /// </summary>
+        [Required]
         public int? QuantidadeUsada { get; set; }
 
         // Relacionamento: Um ServiçoPeca pertence a um Serviço

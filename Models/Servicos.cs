@@ -9,10 +9,31 @@ namespace motasAlcoafinal.Models
     /// </summary>
     public class Servicos
     {
+
+        /// <summary>
+        /// Identificador do servico
+        /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Identificador do motociclo ao qual vai ser feito o serviço
+        /// </summary>
+        [ForeignKey(nameof(Motocicleta))]
         public int? MotocicletaId { get; set; }
+
+        /// <summary>
+        /// Descrição do que é necessário ser feito no serviço
+        /// </summary>
         public string? Descricao { get; set; }
+
+        /// <summary>
+        /// Data em que o serviço é criado
+        /// </summary>
         public DateTime? Data { get; set; }
+
+        /// <summary>
+        /// Valor total que será pago pelo serviço
+        /// </summary>
         public decimal? CustoTotal { get; set; }
 
         // Relacionamento: Um serviço pertence a uma motocicleta

@@ -14,8 +14,22 @@ namespace motasAlcoafinal.Models
     public class EncomendaPecas
     {
         public int Id { get; set; }
+
+        /// <summary>
+        /// Identificador da encomenda
+        /// </summary>
+        [ForeignKey(nameof(Encomenda))]
         public int ? EncomendaId { get; set; }
+
+        /// <summary>
+        /// Identificador da peça
+        /// </summary>
+        [ForeignKey(nameof(Peca))]
         public int ? PecaId { get; set; }
+
+        /// <summary>
+        /// Número de unidades da peça solicitada no pedido
+        /// </summary>
         public int ? Quantidade { get; set; }
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Encomenda
