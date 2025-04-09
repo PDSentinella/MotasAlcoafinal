@@ -21,6 +21,7 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Nome")]
         [StringLength(50)]
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
         public string ? Nome { get; set; }
 
         /// <summary>
@@ -36,6 +37,8 @@ namespace motasAlcoafinal.Models
         /// Email associado ao cliente
         /// </summary>
         [Display(Name = "Email")]
+        [StringLength(50)]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "O {0} não é válido.")]
         public string ? Email { get; set; }
 
 
@@ -46,7 +49,11 @@ namespace motasAlcoafinal.Models
         [StringLength(50)]
         public string ? Endereco { get; set; }
 
-        // Relacionamento: Um cliente pode ter várias motocicletas
+        ///Relacionamento: Um cliente pode ter várias motocicletas
+        /// <summary>
+        /// Lista de motocicletas que são propriedade do 
+        /// cliente
+        /// </summary>
         public ICollection<Motocicletas>? Motocicletas { get; set; }
     }
 }

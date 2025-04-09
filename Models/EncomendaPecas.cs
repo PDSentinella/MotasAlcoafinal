@@ -13,6 +13,10 @@ namespace motasAlcoafinal.Models
 
     public class EncomendaPecas
     {
+        /// <summary>
+        /// Identificador único da relação entre encomenda e peça.
+        /// </summary>
+        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -30,6 +34,8 @@ namespace motasAlcoafinal.Models
         /// <summary>
         /// Número de unidades da peça solicitada no pedido
         /// </summary>
+        [Display(Name = "Quantidade")]
+        [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
         public int ? Quantidade { get; set; }
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Encomenda

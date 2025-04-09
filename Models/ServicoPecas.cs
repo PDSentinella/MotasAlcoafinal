@@ -12,6 +12,10 @@ namespace motasAlcoafinal.Models
     /// </summary>
     public class ServicoPecas
     {
+        /// <summary>
+        /// Identificador do relacionamento entre serviços e peças
+        /// </summary>
+        [Key]
         public int Id { get; set; }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using motasAlcoafinal.Models;
 
 namespace motasAlcoafinal.Models
@@ -13,6 +14,7 @@ namespace motasAlcoafinal.Models
         /// <summary>
         /// Identificador do servico
         /// </summary>
+        [Key]
         public int Id { get; set; }
 
         /// <summary>
@@ -29,6 +31,11 @@ namespace motasAlcoafinal.Models
         /// <summary>
         /// Data em que o serviço é criado
         /// </summary>
+        [Display(Name = "Data")]
+        [DataType(DataType.Date)] // transforma o atributo, na BD, em 'Date'
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
+                     ApplyFormatInEditMode = true)]
+        [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
         public DateTime? Data { get; set; }
 
         /// <summary>
