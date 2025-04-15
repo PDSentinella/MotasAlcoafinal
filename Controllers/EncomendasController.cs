@@ -67,7 +67,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
+        public async Task<IActionResult> Create([Bind("DataPedido, Status ")]Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
             if (ModelState.IsValid)
             {

@@ -62,7 +62,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Clientes cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Telefone, Email, Endereco")] Clientes cliente)
         {
             if (id != cliente.Id)
             {
@@ -104,7 +104,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Clientes cliente)
+        public async Task<IActionResult> Create([Bind("Nome, Email, Telefone, Endereco")] Clientes cliente)
         {
             if (ModelState.IsValid)
             {

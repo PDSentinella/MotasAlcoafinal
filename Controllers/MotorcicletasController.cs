@@ -67,7 +67,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Motocicletas motocicleta)
+        public async Task<IActionResult> Edit(int id,[Bind("Id, ClienteId, Marca, Modelo, Ano, Placa")] Motocicletas motocicleta)
         {
             if (id != motocicleta.Id)
             {
@@ -109,7 +109,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Motocicletas motocicleta)
+        public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")]Motocicletas motocicleta)
         {
             if (ModelState.IsValid)
             {
