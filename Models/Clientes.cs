@@ -29,7 +29,7 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Telefone")]
         [StringLength(9)]
-        [RegularExpression(@"^(91|92|93|96)\d{6}$", ErrorMessage = "Número de {0} inválido. Deve começar com 91, 92, 93 ou 96 e ter 9 dígitos no total.")]
+        [RegularExpression(@"^(91|92|93|96)\d{7}$", ErrorMessage = "Número de {0} inválido. Deve começar com 91, 92, 93 ou 96 e ter 9 dígitos no total.")]
         public string ? Telefone { get; set; }
 
 
