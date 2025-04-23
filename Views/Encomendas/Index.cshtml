@@ -32,7 +32,7 @@
         @foreach (var encomenda in Model)
         {
             <tr>
-                <td>@encomenda.DataPedido?.ToString("dd/MM/yyyy")</td>
+                <td>@encomenda.DataPedido.ToString("dd/MM/yyyy")</td>
                 <td>@encomenda.Status</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@encomenda.Id" class="btn btn-info">Detalhes</a>

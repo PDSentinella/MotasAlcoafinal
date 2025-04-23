@@ -27,7 +27,7 @@ namespace motasAlcoafinal.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
                      ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
-        public DateTime ? DataPedido { get; set; }
+        public DateTime DataPedido { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Estado da encomenda. Representa um conjunto de valores pre-determinados
@@ -35,7 +35,7 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Estado")]
         [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
-        public Estados ? Status { get; set; } = Estados.Pendente; // Default 'Pendente'
+        public Estados Status { get; set; } = Estados.Pendente; // Default 'Pendente'
 
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace motasAlcoafinal.Models
         /// <summary>
         /// Lista de peças que fazem parte da encomenda
         /// </summary>
-        public ICollection<EncomendaPecas>? EncomendaPecas { get; set; }
+        public ICollection <EncomendaPecas> EncomendaPecas { get; set; } = [];
 
     }
 }

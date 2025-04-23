@@ -22,7 +22,7 @@ namespace motasAlcoafinal.Models
         [Display(Name = "Nome")]
         [StringLength(50)]
         [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
-        public string ? Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
 
         /// <summary>
         /// Contacto telefônico do cliente
@@ -30,7 +30,7 @@ namespace motasAlcoafinal.Models
         [Display(Name = "Telefone")]
         [StringLength(9)]
         [RegularExpression(@"^(91|92|93|96)\d{7}$", ErrorMessage = "Número de {0} inválido. Deve começar com 91, 92, 93 ou 96 e ter 9 dígitos no total.")]
-        public string ? Telefone { get; set; }
+        public string Telefone { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace motasAlcoafinal.Models
         [Display(Name = "Email")]
         [StringLength(50)]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "O {0} não é válido.")]
-        public string ? Email { get; set; }
+        public string Email { get; set; } = string.Empty ;
 
 
         /// <summary>
@@ -47,13 +47,14 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Endereço")]
         [StringLength(50)]
-        public string ? Endereco { get; set; }
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
+        public string Endereco { get; set; } = string.Empty;
 
         ///Relacionamento: Um cliente pode ter várias motocicletas
         /// <summary>
         /// Lista de motocicletas que são propriedade do 
         /// cliente
         /// </summary>
-        public ICollection<Motocicletas>? Motocicletas { get; set; }
+        public ICollection <Motocicletas> Motocicletas { get; set; } = [];
     }
 }

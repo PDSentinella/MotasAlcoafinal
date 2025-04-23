@@ -26,7 +26,7 @@ namespace motasAlcoafinal.Models
         /// <summary>
         /// Descrição do que é necessário ser feito no serviço
         /// </summary>
-        public string? Descricao { get; set; }
+        public string Descricao { get; set; } = string.Empty;
 
         /// <summary>
         /// Data em que o serviço é criado
@@ -36,18 +36,18 @@ namespace motasAlcoafinal.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
                      ApplyFormatInEditMode = true)]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
-        public DateTime? Data { get; set; }
+        public DateTime Data { get; set; }
 
         /// <summary>
         /// Valor total que será pago pelo serviço
         /// </summary>
-        public decimal? CustoTotal { get; set; }
+        public decimal CustoTotal { get; set; } = decimal.Zero;
 
         // Relacionamento: Um serviço pertence a uma motocicleta
-        public Motocicletas? Motocicleta { get; set; }
+        public Motocicletas Motocicleta { get; set; } = null!;
 
         // Relacionamento: Um serviço pode usar várias peças
-        public ICollection<ServicoPecas>? ServicoPecas { get; set; }
+        public ICollection<ServicoPecas> ServicoPecas { get; set; } = [];
 
 
     }

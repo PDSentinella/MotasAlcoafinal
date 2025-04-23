@@ -28,8 +28,8 @@
         @foreach (var servico in Model)
         {
             <tr>
-                <td>@servico.Data?.ToString("dd/MM/yyyy")</td>
-                <td>@servico.CustoTotal?.ToString("C")</td>
+                <td>@servico.Data.ToString("dd/MM/yyyy")</td>
+                <td>@servico.CustoTotal.ToString("C")</td>
                 <td>@servico.Motocicleta?.Modelo</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@servico.Id" class="btn btn-info">Detalhes</a>

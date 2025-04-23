@@ -38,12 +38,12 @@ namespace motasAlcoafinal.Models
         /// Quantidade da peça usada no serviço
         /// </summary>
         [Required]
-        public int? QuantidadeUsada { get; set; }
+        public int QuantidadeUsada { get; set; } = 0;
 
         // Relacionamento: Um ServiçoPeca pertence a um Serviço
-        public Servicos? Servico { get; set; }
+        public Servicos Servico { get; set; } = null!;
 
         // Relacionamento: Um ServiçoPeca pertence a uma Peça
-        public Pecas? Peca { get; set; }
+        public Pecas Peca { get; set; } = null!;
     }
 }

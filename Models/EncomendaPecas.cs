@@ -29,20 +29,20 @@ namespace motasAlcoafinal.Models
         /// Identificador da peça
         /// </summary>
         [ForeignKey(nameof(Peca))]
-        public int ? PecaId { get; set; }
+        public int ?PecaId { get; set; }
 
         /// <summary>
         /// Número de unidades da peça solicitada no pedido
         /// </summary>
         [Display(Name = "Quantidade")]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
-        public int ? Quantidade { get; set; }
+        public int Quantidade { get; set; } = 1;
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Encomenda
-        public Encomendas? Encomenda { get; set; }
+        public Encomendas Encomenda { get; set; } = null!;
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Peça
-        public Pecas? Peca { get; set; }
+        public Pecas Peca { get; set; } = null!;
 
     }
 }
