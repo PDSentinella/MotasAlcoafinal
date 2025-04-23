@@ -38,7 +38,7 @@
                 <tr>
                     <td>@peca.Nome</td>
                     <td>@peca.Descricao</td>
-                    <td>@peca.Preco?.ToString("C")</td>
+                    <td>@peca.Preco.ToString("C")</td>
                     <td>@peca.QuantidadeEstoque</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@peca.Id" class="btn btn-info btn-sm">
