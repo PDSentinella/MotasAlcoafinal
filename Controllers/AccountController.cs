@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
+using MotasAlcoafinal.Services;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -11,11 +12,14 @@ namespace MotasAlcoafinal.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly EmailService _emailService;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
+            
         }
 
         [HttpGet]
@@ -33,18 +37,49 @@ namespace MotasAlcoafinal.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmationLink = Url.Action(
+                        "ConfirmEmail",
+                        "Account",
+                        new { userId = user.Id, token = token },
+                        protocol: HttpContext.Request.Scheme);
+
+                    var message = $"<h3>Confirme o seu e-mail</h3>" +
+                                  $"<p>Clique no link para confirmar: <a href='{confirmationLink}'>Confirmar E-mail</a></p>";
+
+                    await _emailService.SendEmailAsync(model.Email, "Confirmação de E-mail", message);
+
+                    return View("Info"); // Crie uma view que diga: "verifique seu e-mail"
                 }
 
                 foreach (var error in result.Errors)
                 {
+                    var errorMsg = error.Description;
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
             return View(model);
         }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+                return BadRequest("Parâmetros inválidos.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound("Utilizador não encontrado.");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded ? View("ConfirmEmailSuccess") : View("Error");
+        }
+
+
+
         [HttpGet]
         public IActionResult Login()
         {
