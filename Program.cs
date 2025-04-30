@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotasAlcoafinal.Models;
+using MotasAlcoafinal.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<EmailService>();
+
 
 var app = builder.Build();
 
