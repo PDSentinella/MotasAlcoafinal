@@ -9,6 +9,7 @@ builder.Services.AddDbContext<MotasAlcoaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Add services to the container.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MotasAlcoaContext>()
     .AddDefaultTokenProviders();
 
@@ -38,4 +39,21 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+//Criar as roles na base de dados
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Verifica se as roles já existem, caso contrário, cria
+    string[] roles = { "Gestor", "Mecanico" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
+//devido ao uso do await temos que colocar o método RUN como assíncrono 
+await app.RunAsync();

@@ -13,13 +13,14 @@ namespace MotasAlcoafinal.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly EmailService _emailService;
+        private readonly RoleManager<IdentityRole> _roleManager; 
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, EmailService emailService)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, EmailService emailService, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
-            
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -154,6 +155,7 @@ namespace MotasAlcoafinal.Controllers
             return View(model);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
@@ -174,10 +176,36 @@ namespace MotasAlcoafinal.Controllers
         }
 
 
+
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
         {
             return View(); 
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> AssignRole(string userId, string role)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("Utilizador não encontrado.");
+            }
+
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+                return BadRequest("A role não existe.");
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (result.Succeeded)
+            {
+                return Ok($"Role '{role}' atribuída ao utilizador '{user.UserName}' com sucesso.");
+            }
+
+            return BadRequest("Erro ao atribuir a role.");
         }
 
 
