@@ -87,21 +87,90 @@ namespace MotasAlcoafinal.Controllers
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            // Dados estáticos para o login
-            var email = "staticuser@example.com";
-            var password = "StaticPassword123!";
+            if (!ModelState.IsValid)
+                return View(model);
 
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email,              // agora usa o email do formulário
+                model.Password,           // e a password que o utilizador introduziu
+                model.RememberMe,
+                lockoutOnFailure: false
+            );
 
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            ModelState.AddModelError(string.Empty, "Tentativa de login inválida.");
+            return View(model);
+        }
+
+
+
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                return View("ForgotPasswordConfirmation"); // View informando que, se o email existir, o link foi enviado
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.Action("ResetPassword", "Account",
+                new { token, email = model.Email }, protocol: HttpContext.Request.Scheme);
+
+            var message = $"<p>Para redefinir sua senha, clique no link abaixo:</p>" +
+                          $"<p><a href='{callbackUrl}'>Redefinir senha</a></p>";
+
+            await _emailService.SendEmailAsync(model.Email, "Recuperação de Password", message);
+
+            return View("ForgotPasswordConfirmation");
+        }
+
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+                return RedirectToAction("Index", "Home");
+
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return RedirectToAction("ResetPasswordConfirmation");
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+                return RedirectToAction("ResetPasswordConfirmation");
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
 
             return View(model);
         }
@@ -113,6 +182,7 @@ namespace MotasAlcoafinal.Controllers
         {
             return View(); 
         }
+
 
 
         [HttpPost]
@@ -137,6 +207,7 @@ namespace MotasAlcoafinal.Controllers
 
             return BadRequest("Erro ao atribuir a role.");
         }
+
 
 
 
