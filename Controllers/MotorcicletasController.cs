@@ -109,16 +109,19 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")]Motocicletas motocicleta)
+        public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")] Motocicletas motocicleta)
         {
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
+
             if (ModelState.IsValid)
             {
                 _context.Add(motocicleta);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
+
             return View(motocicleta);
         }
+
     }
 }

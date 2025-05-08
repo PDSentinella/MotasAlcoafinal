@@ -21,13 +21,12 @@ namespace motasAlcoafinal.Models
         /// Identificador do cliente
         /// </summary>
         [ForeignKey(nameof(Cliente))]
-        public int? ClienteId { get; set; }
+        public int ClienteId { get; set; }
 
         /// <summary>
         /// A marca do motociclo
         /// </summary>
         [Display(Name = "Marca")]
-        [StringLength(50)]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
         [RegularExpression(@"^[A-Za-z0-9\s]+$", ErrorMessage = "A {0} só pode conter letras e números.")]
         public string Marca { get; set; } = string.Empty;
@@ -59,7 +58,7 @@ namespace motasAlcoafinal.Models
         public string Placa { get; set; } = string.Empty;
 
         // Relacionamento: Uma motocicleta pertence a um cliente
-        public Clientes Cliente { get; set; } = null!;
+        public Clientes? Cliente { get; set; }
 
         // Relacionamento: Uma motocicleta pode ter vários serviços
         /// <summary>

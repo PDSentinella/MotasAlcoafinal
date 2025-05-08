@@ -44,7 +44,7 @@ namespace motasAlcoafinal.Models
         public decimal CustoTotal { get; set; } = decimal.Zero;
 
         // Relacionamento: Um serviço pertence a uma motocicleta
-        public Motocicletas Motocicleta { get; set; } = null!;
+        public Motocicletas? Motocicleta { get; set; }
 
         // Relacionamento: Um serviço pode usar várias peças
         public ICollection<ServicoPecas> ServicoPecas { get; set; } = [];

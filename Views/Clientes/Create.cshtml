@@ -3,36 +3,35 @@
     ViewData["Title"] = "Criar Cliente";
 }
 <div class="container mt-4">
-    <div class="card shadow-lg">
+    <div class="card shadow border-0">
         <div class="card-header bg-primary text-white">
-            <h2 class="fw-bold">Criar Cliente</h2>
+            <h2 class="mb-0">Criar Cliente</h2>
         </div>
         <div class="card-body">
-            <form asp-action="Create" method="post" class="">
-                <div class="form-group " mb-3">
-                    <label asp-for="Nome" class="control-label"></label>
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="Nome" class="form-label">Nome</label>
                     <input asp-for="Nome" class="form-control" />
                     <span asp-validation-for="Nome" class="text-danger"></span>
                 </div>
-                <div class="form-group " mb-3">
-                    <label asp-for="Telefone" class="control-label"></label>
+                <div class="mb-3">
+                    <label asp-for="Telefone" class="form-label">Telefone</label>
                     <input asp-for="Telefone" class="form-control" />
                     <span asp-validation-for="Telefone" class="text-danger"></span>
                 </div>
-                <div class="form-group " mb-3">
-                    <label asp-for="Email" class="control-label"></label>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <div class="form-group " mb-3">
-                    <label asp-for="Endereco" class="control-label"></label>
+                <div class="mb-3">
+                    <label asp-for="Endereco" class="form-label">Endereço</label>
                     <input asp-for="Endereco" class="form-control" />
                     <span asp-validation-for="Endereco" class="text-danger"></span>
                 </div>
-                <br/>
                 <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-secondary shadow"><i class="fas fa-arrow-left"></i> Voltar</a>
-                    <input type="submit" value="Criar" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary">Criar</button>
+                    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
                 </div>
             </form>
         </div>

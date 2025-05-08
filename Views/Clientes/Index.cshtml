@@ -4,56 +4,58 @@
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold text-primary">📋 Lista de Clientes</h2>
-        <a class="btn btn-success shadow" asp-controller="Clientes" asp-action="Create">
-            <i class="fas fa-user-plus"></i> Criar Cliente
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-danger">📋 Lista de Clientes</h2>
+        <a class="btn btn-primary shadow rounded-pill px-4" asp-controller="Clientes" asp-action="Create">
+            <i class="fas fa-user-plus me-2"></i> Criar Cliente
         </a>
     </div>
 
     <!-- Barra de Pesquisa -->
-    <div class="card shadow p-3 mb-4">
-        <form asp-controller="Clientes" asp-action="Index" method="get" >
+    <div class="card shadow-sm p-4 border-start border-4 border-danger mb-4 bg-light">
+        <form asp-controller="Clientes" asp-action="Index" method="get">
             <div class="input-group">
                 <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar clientes..." />
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
+                <button type="submit" class="btn btn-danger"><i class="fas fa-search"></i> Pesquisar</button>
             </div>
         </form>
     </div>
 
-
     <!-- Tabela de Clientes -->
-    <div class="table-responsive shadow rounded">
-        <table class="table table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Endereço</th>
-                    <th class="text-center">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var cliente in Model)
-                {
-                    <tr class="border-bottom">
-                        <td>@cliente.Nome</td>
-                        <td>@cliente.Telefone</td>
-                        <td>@cliente.Email</td>
-                        <td>@cliente.Endereco</td>
-                        <td class="text-center">
-                            <a asp-action="Details" asp-route-id="@cliente.Id" class="btn btn-info btn-sm me-1">
-                                <i class="fas fa-eye"></i> Detalhes
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@cliente.Id" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Editar
-                            </a>
-                        </td>
+    <div class="card shadow-sm border-start border-4 border-primary mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Endereço</th>
+                        <th class="text-center">Ações</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td>@cliente.Nome</td>
+                            <td>@cliente.Telefone</td>
+                            <td>@cliente.Email</td>
+                            <td>@cliente.Endereco</td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@cliente.Id" class="btn btn-outline-primary btn-sm me-1 rounded-pill">
+                                    <i class="fas fa-eye"></i> Detalhes
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@cliente.Id" class="btn btn-outline-danger btn-sm rounded-pill">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Paginação -->
@@ -76,5 +78,5 @@
     </nav>
 </div>
 
-<!-- Adicionar FontAwesome para os ícones -->
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

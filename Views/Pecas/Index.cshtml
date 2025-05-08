@@ -2,58 +2,77 @@
 @{
     ViewData["Title"] = "Lista de Peças";
 }
+
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold text-primary">Lista de Peças</h2>
-        <a class="btn btn-success shadow" asp-controller="Pecas" asp-action="Create">
-            <i class="fas fa-plus-circle"></i> Criar Peça
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success">🛠️ Lista de Peças</h2>
+        <a class="btn btn-success shadow rounded-pill px-4" asp-controller="Pecas" asp-action="Create">
+            <i class="fas fa-plus-circle me-2"></i> Criar Peça
         </a>
     </div>
 
-    <div class="card shadow p-3 mb-4">
-    <form asp-controller="Pecas" asp-action="Index" method="get">
-        <div class="input-group">
-                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control rounded-start" placeholder="🔍 Pesquisar peças..." />
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i> Pesquisar
-            </button>
-        </div>
-    </form>
+    <!-- Barra de Pesquisa -->
+    <div class="card shadow-sm p-4 border-start border-4 border-success mb-4 bg-light">
+        <form asp-controller="Pecas" asp-action="Index" method="get">
+            <div class="input-group">
+                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar peças..." />
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-search me-1"></i> Pesquisar
+                </button>
+            </div>
+        </form>
     </div>
 
+    <!-- Tabela de Peças -->
+    <div class="card shadow-sm border-start border-4 border-dark mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
+                        <th>Quantidade em Estoque</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-muted py-4">Nenhuma peça encontrada.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var peca in Model)
+                        {
+                            <tr>
+                                <td>@peca.Nome</td>
+                                <td>@peca.Descricao</td>
+                                <td>@peca.Preco.ToString("C")</td>
+                                <td>@peca.QuantidadeEstoque</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@peca.Id" class="btn btn-outline-info btn-sm rounded-pill">
+                                            <i class="fas fa-eye me-1"></i> Detalhes
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@peca.Id" class="btn btn-outline-warning btn-sm rounded-pill">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <table class="table table-striped table-hover text-center">
-        <thead class="table-dark">
-            <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Quantidade em Estoque</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var peca in Model)
-            {
-                <tr>
-                    <td>@peca.Nome</td>
-                    <td>@peca.Descricao</td>
-                    <td>@peca.Preco.ToString("C")</td>
-                    <td>@peca.QuantidadeEstoque</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@peca.Id" class="btn btn-info btn-sm">
-                            <i class="fas fa-eye"></i> Detalhes
-                        </a>
-                        <a asp-action="Edit" asp-route-id="@peca.Id" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Editar
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <nav aria-label="Page navigation">
+    <!-- Paginação -->
+    <nav class="mt-4">
         <ul class="pagination justify-content-center">
             <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link" asp-controller="Pecas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage - 1)" asp-route-searchString="@ViewBag.SearchString">
@@ -61,7 +80,7 @@
                 </a>
             </li>
             <li class="page-item disabled">
-                <span class="page-link">@ViewBag.CurrentPage</span>
+                <span class="page-link bg-light text-dark fw-bold">@ViewBag.CurrentPage</span>
             </li>
             <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
                 <a class="page-link" asp-controller="Pecas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage + 1)" asp-route-searchString="@ViewBag.SearchString">
@@ -72,5 +91,5 @@
     </nav>
 </div>
 
-<!-- Adicionando FontAwesome para os ícones -->
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

@@ -4,55 +4,67 @@
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary">🏍️ Lista de Motocicletas</h2>
-        <a class="btn btn-success shadow" asp-controller="Motocicletas" asp-action="Create">
-            <i class="fas fa-plus-circle"></i> Criar Motocicleta
+        <a class="btn btn-success shadow rounded-pill px-4" asp-controller="Motocicletas" asp-action="Create">
+            <i class="fas fa-plus-circle me-2"></i> Criar Motocicleta
         </a>
     </div>
 
-    <!-- Barra de pesquisa -->
-    <div class="card shadow p-3 mb-4">
+    <!-- Barra de Pesquisa -->
+    <div class="card shadow-sm p-4 border-start border-4 border-primary mb-4 bg-light">
         <form asp-controller="Motocicletas" asp-action="Index" method="get">
             <div class="input-group">
-                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control" placeholder="🔍 Pesquisar motocicletas..." />
+                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar motocicletas..." />
                 <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
             </div>
         </form>
     </div>
 
-    <!-- Tabela estilizada -->
-    <div class="card shadow-lg">
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-dark text-center">
+    <!-- Tabela de Motocicletas -->
+    <div class="card shadow-sm border-start border-4 border-success mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-success text-center">
                     <tr>
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Ano</th>
                         <th>Placa</th>
                         <th>Cliente</th>
-                        <th>Ações</th>
+                        <th class="text-center">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
-                    @foreach (var motocicleta in Model)
+                    @if (!Model.Any())
                     {
                         <tr>
-                            <td>@motocicleta.Marca</td>
-                            <td>@motocicleta.Modelo</td>
-                            <td>@motocicleta.Ano</td>
-                            <td>@motocicleta.Placa</td>
-                            <td>@(motocicleta.Cliente?.Nome??"Sem cliente")</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@motocicleta.Id" class="btn btn-info btn-sm shadow">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@motocicleta.Id" class="btn btn-warning btn-sm shadow">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </td>
+                            <td colspan="6" class="text-muted py-4">Nenhuma motocicleta encontrada.</td>
                         </tr>
+                    }
+                    else
+                    {
+                        @foreach (var motocicleta in Model)
+                        {
+                            <tr>
+                                <td>@motocicleta.Marca</td>
+                                <td>@motocicleta.Modelo</td>
+                                <td>@motocicleta.Ano</td>
+                                <td>@motocicleta.Placa</td>
+                                <td>@(motocicleta.Cliente?.Nome ?? "Sem cliente")</td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@motocicleta.Id" class="btn btn-outline-info btn-sm rounded-pill">
+                                            <i class="fas fa-eye me-1"></i> Detalhes
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@motocicleta.Id" class="btn btn-outline-warning btn-sm rounded-pill">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -60,18 +72,18 @@
     </div>
 
     <!-- Paginação -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mt-4">
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
             <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link shadow" asp-controller="Motocicletas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage - 1)" asp-route-searchString="@ViewBag.SearchString">
+                <a class="page-link" asp-controller="Motocicletas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage - 1)" asp-route-searchString="@ViewBag.SearchString">
                     <i class="fas fa-chevron-left"></i>
                 </a>
             </li>
             <li class="page-item disabled">
-                <span class="page-link bg-light text-dark shadow">@ViewBag.CurrentPage</span>
+                <span class="page-link bg-light text-dark fw-bold">@ViewBag.CurrentPage</span>
             </li>
             <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                <a class="page-link shadow" asp-controller="Motocicletas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage + 1)" asp-route-searchString="@ViewBag.SearchString">
+                <a class="page-link" asp-controller="Motocicletas" asp-action="Index" asp-route-pageNumber="@(ViewBag.CurrentPage + 1)" asp-route-searchString="@ViewBag.SearchString">
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </li>
@@ -79,5 +91,5 @@
     </nav>
 </div>
 
-<!-- Adicionando FontAwesome para os ícones -->
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

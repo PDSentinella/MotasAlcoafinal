@@ -39,10 +39,10 @@ namespace motasAlcoafinal.Models
         public int Quantidade { get; set; } = 1;
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Encomenda
-        public Encomendas Encomenda { get; set; } = null!;
+        public Encomendas? Encomenda { get; set; }
 
         // Relacionamento: Uma EncomendaPeca pertence a uma Peça
-        public Pecas Peca { get; set; } = null!;
+        public Pecas? Peca { get; set; }
 
     }
 }

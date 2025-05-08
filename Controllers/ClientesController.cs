@@ -114,5 +114,22 @@ namespace MotasAlcoafinal.Controllers
             }
             return View(cliente);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente == null)
+            {
+                TempData["ErrorMessage"] = "Cliente não encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Cliente removido com sucesso.";
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

@@ -1,8 +1,148 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página Inicial";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    header {
+        background-color: #b30000; /* vermelho escuro */
+        color: white;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    .welcome-text h1 {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .welcome-text p {
+        font-size: 1.2rem;
+    }
+
+    .card-custom {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .card-custom:hover {
+        transform: scale(1.05);
+    }
+
+    .bg-blue {
+        background-color: #004080 !important; /* azul escuro */
+    }
+
+    footer {
+        background-color: #eaeaea;
+        padding: 1rem;
+        margin-top: 3rem;
+        text-align: center;
+        color: #6c757d;
+    }
+</style>
+
+<header>
+    <div class="welcome-text">
+        <h1>MotasAlcoa - Sistema Interno</h1>
+        <p>Bem-vindo! Aceda rapidamente às funcionalidades da oficina.</p>
+    </div>
+</header>
+
+@if (User.IsInRole("Gestor"))
+{
+    <!-- Cards para o GESTOR DE ARMAZÉM -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-blue card-custom text-center p-3">
+                <i class="bi bi-card-list display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Lista de Serviços</h5>
+                    <p class="card-text">Consultar todos os serviços agendados.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger card-custom text-center p-3">
+                <i class="bi bi-box-seam display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Estoque de Peças</h5>
+                    <p class="card-text">Ver peças e quantidades disponíveis.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-blue card-custom text-center p-3">
+                <i class="bi bi-plus-circle display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Adicionar Peças</h5>
+                    <p class="card-text">Inserir novas peças e quantidades ao estoque.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger card-custom text-center p-3">
+                <i class="bi bi-truck display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Encomendas</h5>
+                    <p class="card-text">Gerir encomendas pendentes e novas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (User.IsInRole("Mecanico"))
+{
+    <!-- Cards para o MECÂNICO -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-blue card-custom text-center p-3">
+                <i class="bi bi-person-plus display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Registar Cliente</h5>
+                    <p class="card-text">Adicionar novos clientes ao sistema.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger card-custom text-center p-3">
+                <i class="bi bi-bicycle display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Nova Motocicleta</h5>
+                    <p class="card-text">Associar motos aos clientes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-blue card-custom text-center p-3">
+                <i class="bi bi-wrench-adjustable-circle display-4"></i>
+                <div class="card-body">
+                    <h5 class="card-title">Criar Serviço</h5>
+                    <p class="card-text">Agendar novo serviço de manutenção.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+}
+
+
+<footer>
+    MotasAcloa © 2025 | Sistema Interno | Desenvolvido por [teu nome]
+</footer>
