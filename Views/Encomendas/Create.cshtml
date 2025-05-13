@@ -3,37 +3,48 @@
     ViewData["Title"] = "Criar Encomenda";
 }
 
-<h2>Criar Encomenda</h2>
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            <h2 class="mb-0">Criar Encomenda</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="mb-3">
+                    <label asp-for="DataPedido" class="form-label">Data do Pedido</label>
+                    <input asp-for="DataPedido" class="form-control" type="date" />
+                    <span asp-validation-for="DataPedido" class="text-danger"></span>
+                </div>
 
-<form asp-action="Create" method="post" class="form-horizontal">
-    <div class="form-group">
-        <label asp-for="DataPedido" class="control-label"></label>
-        <input asp-for="DataPedido" class="form-control" />
-        <span asp-validation-for="DataPedido" class="text-danger"></span>
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="Pendente">Pendente</option>
+                        <option value="Entregue">Entregue</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="pecas" class="form-label">Peças</label>
+                    <select id="pecas" name="pecasIds" class="form-select" multiple>
+                        @foreach (var peca in ViewBag.Pecas)
+                        {
+                            <option value="@peca.Value">@peca.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantidades" class="form-label">Quantidades (Separadas por vírgula)</label>
+                    <input id="quantidades" name="quantidades" class="form-control" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success">Criar</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Status" class="control-label"></label>
-        <select asp-for="Status" class="form-control">
-            <option value="Pendente">Pendente</option>
-            <option value="Entregue">Entregue</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label for="pecas" class="control-label">Peças</label>
-        <select id="pecas" name="pecasIds" class="form-control" multiple>
-            @foreach (var peca in ViewBag.Pecas)
-            {
-                <option value="@peca.Value">@peca.Text</option>
-            }
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="quantidades" class="control-label">Quantidades</label>
-        <input id="quantidades" name="quantidades" class="form-control" />
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Salvar" class="btn btn-primary" />
-        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-    </div>
-</form>
+</div>

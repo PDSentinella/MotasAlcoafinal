@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MotasAlcoafinal.styles.css" asp-append-version="true" />
+    <style>
+    .card.menu-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .card.menu-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card.menu-card:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
 </head>
 <body>
     <header>
@@ -22,29 +39,50 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Offcanvas</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+     
+                    <div class="offcanvas-body px-3">
+                        <div class="fw-bold text-uppercase text-secondary small mb-3">Gestão</div>
+
+                        <div class="card menu-card mb-2">
+                            <a class="card-body text-decoration-none text-dark d-flex align-items-center gap-2" asp-controller="Clientes" asp-action="Index">
+                                <i class="fas fa-user text-primary"></i> Clientes
+                            </a>
+                        </div>
+                        <div class="card menu-card mb-2">
+                            <a class="card-body text-decoration-none text-dark d-flex align-items-center gap-2" asp-controller="Motocicletas" asp-action="Index">
+                                <i class="fas fa-motorcycle text-primary"></i> Motocicletas
+                            </a>
+                        </div>
+                        <div class="card menu-card mb-2">
+                            <a class="card-body text-decoration-none text-dark d-flex align-items-center gap-2" asp-controller="Pecas" asp-action="Index">
+                                <i class="fas fa-cogs text-primary"></i> Peças
+                            </a>
+                        </div>
+                        <div class="card menu-card mb-4">
+                            <a class="card-body text-decoration-none text-dark d-flex align-items-center gap-2" asp-controller="Servicos" asp-action="Index">
+                                <i class="fas fa-tools text-primary"></i> Serviços
+                            </a>
+                        </div>
+
+                        <div class="fw-bold text-uppercase text-secondary small mb-3">Encomendas</div>
+
+                        <div class="card menu-card mb-2">
+                            <a class="card-body text-decoration-none text-dark d-flex align-items-center gap-2" asp-controller="Encomendas" asp-action="Index">
+                                <i class="fas fa-box text-primary"></i> Ver Todas
+                            </a>
+                        </div>
+
+                        <hr />
+
+                        <div class="card menu-card mb-2">
+                            <a class="card-body text-decoration-none text-danger d-flex align-items-center gap-2" asp-controller="Account" asp-action="Logout">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </a>
+                        </div>
                     </div>
-                    <div class="offcanvas-body">
-                        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Clientes" asp-action="Index">Clientes</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Motocicletas" asp-action="Index">Motocicletas</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Pecas" asp-action="Index">Peças</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Servicos" asp-action="Index">Serviços</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Encomendas" asp-action="Index">Encomendas</a>
-                            </li>
-                        </ul>
-                    </div>
+
+
+
                 </div>
             </div>
         </nav>
@@ -57,7 +95,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - MotasAlcoafinal 
+                MotasAlcoa © 2025 | Sistema Interno | Desenvolvido por Paulo Sentinela e Guilherme Simões
         </div>
     </footer>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
