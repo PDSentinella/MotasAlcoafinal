@@ -51,8 +51,10 @@
             </table>
 
             <div class="d-flex justify-content-between mt-3">
+                 @if(User.IsInRole("Mecanico") || User.IsInRole("Gestor")){
                 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-                <a asp-action="Index" class="btn btn-danger">Voltar</a>
+                 }
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </div>
     </div>
