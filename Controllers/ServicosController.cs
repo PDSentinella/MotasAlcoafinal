@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
             var servicos = from s in _context.Servicos
@@ -39,6 +41,8 @@ namespace MotasAlcoafinal.Controllers
 
             return View(servicosList);
         }
+
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var servico = await _context.Servicos
@@ -53,6 +57,7 @@ namespace MotasAlcoafinal.Controllers
             return View(servico);
         }
 
+        [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo");
@@ -62,6 +67,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Create( [Bind("Descricao, Data, CustoTotal, MotocicletaId")]Servicos servico, List<int> pecasIds, List<int> quantidades)
         {
             if (ModelState.IsValid)
@@ -87,6 +93,7 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View(servico);
         }
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var servico = await _context.Servicos
@@ -102,6 +109,7 @@ namespace MotasAlcoafinal.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id, [Bind("Descricao, Data, CustoTotal, MotocicletaId")] Servicos servico, List<int> pecasIds, List<int> quantidades)
         {
             if (id != servico.Id)
@@ -149,6 +157,8 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View(servico);
         }
+
+        [Authorize(Roles = "Mecanico,Root")]
         public IActionResult AddPeca(int id)
         {
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
@@ -157,6 +167,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> AddPeca(ServicoPecas servicoPeca)
         {
             if (ModelState.IsValid && servicoPeca.ServicoId != null)
@@ -189,6 +200,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> EditPeca(ServicoPecas servicoPeca)
         {
             if (ModelState.IsValid && servicoPeca.PecaId != null)
@@ -208,6 +220,7 @@ namespace MotasAlcoafinal.Controllers
             return View(servicoPeca);
         }
 
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> DeletePeca(int id)
         {
             var servicoPeca = await _context.ServicoPecas.FindAsync(id);
