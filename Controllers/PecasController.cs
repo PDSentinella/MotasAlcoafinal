@@ -77,7 +77,7 @@ namespace MotasAlcoafinal.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nome, Descricao, Preco, QuantidadeEstoque")] Pecas peca)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Descricao, Preco, QuantidadeEstoque")] Pecas peca)
         {
             if (id != peca.Id)
             {
