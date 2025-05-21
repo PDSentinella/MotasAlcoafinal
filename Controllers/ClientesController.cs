@@ -16,6 +16,7 @@ namespace MotasAlcoafinal.Controllers
         {
             _context = context;
         }
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
             var clientes = from c in _context.Clientes
@@ -39,6 +40,7 @@ namespace MotasAlcoafinal.Controllers
             return View(clientesList);
         }
 
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var cliente = await _context.Clientes
@@ -50,6 +52,9 @@ namespace MotasAlcoafinal.Controllers
             }
             return View(cliente);
         }
+
+
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
@@ -62,6 +67,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Mecanico,Root")]
         public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Telefone, Email, Endereco")] Clientes cliente)
         {
             if (id != cliente.Id)
@@ -92,11 +98,13 @@ namespace MotasAlcoafinal.Controllers
             return View(cliente);
         }
 
+        [Authorize]
         private bool ClienteExists(int id)
         {
             return _context.Clientes.Any(e => e.Id == id);
         }
 
+        [Authorize("Mecanico, Root")]
         public IActionResult Create()
         {
             return View();
@@ -104,6 +112,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Create([Bind("Nome, Email, Telefone, Endereco")] Clientes cliente)
         {
             if (ModelState.IsValid)
@@ -117,6 +126,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Delete(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
