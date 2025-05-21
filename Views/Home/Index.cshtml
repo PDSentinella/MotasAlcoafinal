@@ -56,7 +56,7 @@
     </div>
 </header>
 
-@if (User.IsInRole("Gestor"))
+@if (User.IsInRole("Gestor") || User.IsInRole("Root"))
 {
     <!-- Cards para o GESTOR DE ARMAZÉM -->
     <div class="row g-4">
@@ -98,7 +98,7 @@
         </div>
     </div>
 }
-else if (User.IsInRole("Mecanico"))
+else if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
 {
     <!-- Cards para o MECÂNICO -->
     <div class="row g-4">

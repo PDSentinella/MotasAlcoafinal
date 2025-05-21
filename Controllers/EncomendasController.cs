@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using motasAlcoafinal.Models;
@@ -17,6 +18,7 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, string statusFilter, int pageNumber = 1, int pageSize = 10)
         {
             var encomendas = from e in _context.Encomendas
@@ -46,6 +48,7 @@ namespace MotasAlcoafinal.Controllers
             return View(encomendasList);
         }
 
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var encomenda = await _context.Encomendas
@@ -59,6 +62,7 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        [Authorize("Gestor,Root")]
         public IActionResult Create()
         {
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
@@ -67,6 +71,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Gestor,Root")]
         public async Task<IActionResult> Create([Bind("DataPedido, Status ")]Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
             if (ModelState.IsValid)
@@ -92,6 +97,7 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        [Authorize("Gestor,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var encomenda = await _context.Encomendas
@@ -107,6 +113,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Gestor,Root")]
         public async Task<IActionResult> Edit(int id, Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
             if (id != encomenda.Id)
