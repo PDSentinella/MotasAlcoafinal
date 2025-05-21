@@ -20,6 +20,7 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
             var motocicletas = from m in _context.Motocicletas
@@ -43,6 +44,7 @@ namespace MotasAlcoafinal.Controllers
 
             return View(motocicletasList);
         }
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var motocicleta = await _context.Motocicletas
@@ -54,6 +56,8 @@ namespace MotasAlcoafinal.Controllers
             }
             return View(motocicleta);
         }
+
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var motocicleta = await _context.Motocicletas.FindAsync(id);
@@ -67,6 +71,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Edit(int id,[Bind("Id, ClienteId, Marca, Modelo, Ano, Placa")] Motocicletas motocicleta)
         {
             if (id != motocicleta.Id)
@@ -97,10 +102,13 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
             return View(motocicleta);
         }
+        [Authorize]
         private bool MotocicletaExists(int id)
         {
             return _context.Motocicletas.Any(e => e.Id == id);
         }
+
+        [Authorize("Mecanico, Root")]
         public IActionResult Create()
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome");
@@ -109,6 +117,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize("Mecanico, Root")]
         public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")] Motocicletas motocicleta)
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
