@@ -1,0 +1,31 @@
+@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    ViewBag.Title = "Atribuir Roles";
+    var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
+}
+
+<h2>Atribuir Roles aos Utilizadores</h2>
+<table class="table">
+    <tr>
+        <th>Email</th>
+        <th>Atribuir Role</th>
+    </tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>
+                <form asp-action="AssignRole" method="post">
+                    <input type="hidden" name="userId" value="@user.Id" />
+                    <select name="role" class="form-control">
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.Name">@role.Name</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Atribuir</button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>
