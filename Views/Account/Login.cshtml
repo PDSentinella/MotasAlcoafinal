@@ -1,31 +1,90 @@
 ﻿@model motasAlcoafinal.Models.LoginViewModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Login";
 }
-<h2>Login</h2>
 
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<form asp-action="Login" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    header {
+        background-color: #b30000; /* vermelho escuro */
+        color: white;
+        padding: 2rem 1rem;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .login-container {
+        max-width: 450px;
+        margin: auto;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+    .form-check-label {
+        margin-left: 0.25rem;
+    }
+
+    .login-icon {
+        font-size: 3rem;
+        color: #004080;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    footer {
+        background-color: #eaeaea;
+        padding: 1rem;
+        margin-top: 3rem;
+        text-align: center;
+        color: #6c757d;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-icon">
+        <i class="bi bi-box-arrow-in-right"></i>
     </div>
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <div class="form-check">
+
+    <h2>Login</h2>
+
+    <form asp-action="Login" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3 form-check">
             <input asp-for="RememberMe" class="form-check-input" />
             <label asp-for="RememberMe" class="form-check-label"></label>
         </div>
-    </div>
 
-    <p>
-        <a asp-action="ForgotPassword">Esqueceu-se da sua password?</a>
-    </p>
+        <div class="mb-3 text-center">
+            <a asp-action="ForgotPassword">Esqueceu-se da sua password?</a>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </div>
+    </form>
+</div>
