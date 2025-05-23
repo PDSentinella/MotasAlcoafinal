@@ -2,30 +2,119 @@
 @{
     ViewBag.Title = "Atribuir Roles";
     var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
+    var userRoles = ViewBag.UserRoles as Dictionary<string, string>;
 }
 
-<h2>Atribuir Roles aos Utilizadores</h2>
-<table class="table">
-    <tr>
-        <th>Email</th>
-        <th>Atribuir Role</th>
-    </tr>
-    @foreach (var user in Model)
-    {
-        <tr>
-            <td>@user.Email</td>
-            <td>
-                <form asp-action="AssignRole" method="post">
-                    <input type="hidden" name="userId" value="@user.Id" />
-                    <select name="role" class="form-control">
-                        @foreach (var role in roles)
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Atribuir Roles aos Utilizadores</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Email</th>
+                        <th>Role Atual</th>
+                        <th>Atribuir Nova Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        // Ignora o utilizador atual ou se a role for "Root"
+                        if (user.UserName == User.Identity.Name || (userRoles.ContainsKey(user.Id) && userRoles[user.Id] == "Root"))
                         {
-                            <option value="@role.Name">@role.Name</option>
+                            continue;
                         }
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm">Atribuir</button>
-                </form>
-            </td>
-        </tr>
-    }
-</table>
+
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    @(userRoles != null && userRoles.ContainsKey(user.Id) ? userRoles[user.Id] : "Sem role")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-start align-items-center gap-3 flex-wrap">
+                                    <!-- Formulário para atribuir role -->
+                                    <form asp-action="AssignRole" method="post" class="d-flex align-items-center">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="role" class="form-select me-2" style="max-width: 200px;">
+                                            @foreach (var role in roles)
+                                            {
+                                                if (role.Name != "Root")
+                                                {
+                                                    <option value="@role.Name" selected="@(role.Name == userRoles[user.Id] ? "selected" : null)">
+                                                        @role.Name
+                                                        @role
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-success btn-sm" style="margin-left:20px;">
+                                            <i class="fas fa-check"></i> Atribuir
+                                        </button>
+                                    </form>
+
+                                    <!-- Formulário para apagar utilizador -->
+                                    @if (User.IsInRole("Root"))
+                                    {
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                    data-user-id="@user.Id" data-user-email="@user.Email">
+                                                <i class="fas fa-trash-alt"></i> Apagar
+                                            </button>
+
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="deleteUserForm" asp-action="DeleteUser" method="post">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminação</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem a certeza que deseja eliminar o utilizador <strong id="userEmailDisplay"></strong>?</p>
+                    <input type="hidden" name="userId" id="userIdToDelete" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Sim, eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+                    @section Scripts {
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userEmail = button.getAttribute('data-user-email');
+
+            const inputUserId = document.getElementById('userIdToDelete');
+            const emailDisplay = document.getElementById('userEmailDisplay');
+
+            inputUserId.value = userId;
+            emailDisplay.textContent = userEmail;
+        });
+    </script>
+}

@@ -54,7 +54,7 @@ namespace MotasAlcoafinal.Controllers
         }
 
 
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
@@ -67,7 +67,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Mecanico,Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Telefone, Email, Endereco")] Clientes cliente)
         {
             if (id != cliente.Id)
@@ -104,7 +104,7 @@ namespace MotasAlcoafinal.Controllers
             return _context.Clientes.Any(e => e.Id == id);
         }
 
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
             return View();
@@ -112,7 +112,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Create([Bind("Nome, Email, Telefone, Endereco")] Clientes cliente)
         {
             if (ModelState.IsValid)
@@ -126,7 +126,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Delete(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);

@@ -16,6 +16,7 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
             var pecas = from p in _context.Pecas
@@ -38,6 +39,8 @@ namespace MotasAlcoafinal.Controllers
 
             return View(pecasList);
         }
+
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var peca = await _context.Pecas.FindAsync(id);
@@ -48,6 +51,7 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -55,6 +59,7 @@ namespace MotasAlcoafinal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("Nome, Descricao, Preco, QuantidadeEstoque")] Pecas peca)
         {
             if (ModelState.IsValid)
@@ -66,6 +71,7 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             var peca = await _context.Pecas.FindAsync(id);
@@ -77,6 +83,7 @@ namespace MotasAlcoafinal.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Descricao, Preco, QuantidadeEstoque")] Pecas peca)
         {
             if (id != peca.Id)
@@ -107,6 +114,7 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        [Authorize]
         private bool PecaExists(int id)
         {
             return _context.Pecas.Any(e => e.Id == id);
