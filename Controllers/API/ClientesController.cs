@@ -29,7 +29,9 @@ namespace MotasAlcoafinal.Controllers.API
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Clientes>>> GetClientes()
         {
-            return await _context.Clientes.ToListAsync();
+            return await _context.Clientes
+                        .Include(c => c.Motocicletas)
+                        .ToListAsync();
         }
 
 

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MotasAlcoafinal.Models;
 using motasAlcoafinal.Models;
+using MotasAlcoafinal.Models.ViewModels;
 
 namespace MotasAlcoafinal.Controllers.API
 {
@@ -23,16 +24,35 @@ namespace MotasAlcoafinal.Controllers.API
 
         // GET: api/Motocicletas
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Motocicletas>>> GetMotocicletas()
+        public async Task<ActionResult<IEnumerable<MotocicletasDTO>>> GetMotocicletas()
         {
-            return await _context.Motocicletas.ToListAsync();
+
+            //return await _context.Motocicletas.ToListAsync();
+
+            var listagemFotos = await _context.Motocicletas
+                .OrderByDescending(m=>m.Ano)
+                .Select(m=> new MotocicletasDTO
+                {
+                    Marca=m.Marca,
+                    Modelo=m.Modelo,
+                    Ano=m.Ano,
+                })
+                .ToListAsync();
+
+            return listagemFotos;
         }
 
         // GET: api/Motocicletas/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Motocicletas>> GetMotocicleta(int id)
+        public async Task<ActionResult<MotocicletasDTO>> GetMotocicleta(int id)
         {
-            var motocicleta = await _context.Motocicletas.FindAsync(id);
+            var motocicleta = await _context.Motocicletas
+                                            .Where(m=>m.Id == id)
+                                            .Select(m=> new MotocicletasDTO{
+                                             Marca = m.Marca,
+                                             Modelo=m.Modelo,
+                                             Ano=m.Ano,
+                                            }).FirstOrDefaultAsync();
 
             if (motocicleta == null)
             {
