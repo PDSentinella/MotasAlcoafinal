@@ -14,7 +14,7 @@ namespace MotasAlcoafinal.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] //podemos meter com ROLES
+    [Authorize(AuthenticationSchemes ="Bearer")] //esta autenticação será por JWT
     public class MotocicletasAuthController : ControllerBase
     {
         private readonly MotasAlcoaContext _context;
@@ -26,7 +26,6 @@ namespace MotasAlcoafinal.Controllers.API
 
         // GET: api/Motocicletas
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<MotocicletasDTO>>> GetMotocicletas()
         {
 
