@@ -39,6 +39,11 @@ namespace MotasAlcoafinal.Controllers.API
         }
 
 
+        /// <summary>
+        /// Realiza a autenticação do utilizador e gera um token JWT para ter acesso à API.
+        /// </summary>
+        /// <param name="login"> Um objeto que contém as credenciais do utilizador (username/email e password).</param>
+        /// <returns>Retorna um token JWT válido para autenticação, ou Unauthorized em caso de falha.</returns>
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
@@ -55,26 +60,42 @@ namespace MotasAlcoafinal.Controllers.API
 
             // houve sucesso na autenticação
             // vou gerar o 'token', associado ao utilizador
-            var token = GenerateJwtToken(login.UserName);
+            var token = await GenerateJwtToken(user);
 
             //devolvo o 'token'
             return Ok(new { token });
         }
 
         /// <summary>
-        /// 
+        ///  Gerador de tokens para fazer a autenticação na API
         /// </summary>
-        /// <param name="username">nome da pessoa associada ao token</param>
-        /// <returns></returns>
-        private string GenerateJwtToken(string username)
+        /// <param name="username">Nome do utilizador associado ao token</param>
+        /// <returns>Retorna o token como uma string</returns>
+        private async Task<string> GenerateJwtToken(IdentityUser user)
         {
-            var claims = new[] {
-         new Claim(ClaimTypes.Name, username)
-     };
+            // Claims básicas: nome e ID do token
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, user.UserName),
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(s: _config["Jwt:Key"]));
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Adicionar roles como claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            // Criar a chave de segurança
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+
+            // Definir as credenciais do token
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            // Criar o token
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
@@ -82,6 +103,7 @@ namespace MotasAlcoafinal.Controllers.API
                 expires: DateTime.Now.AddHours(2),
                 signingCredentials: creds);
 
+            // Retornar token como string
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 

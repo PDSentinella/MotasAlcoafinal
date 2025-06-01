@@ -6,6 +6,7 @@ using MotasAlcoafinal.Data;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,7 +67,9 @@ builder.Services.AddAuthentication(options => { })
            ValidateIssuerSigningKey = true,
            ValidIssuer = jwtSettings["Issuer"],
            ValidAudience = jwtSettings["Audience"],
-           IssuerSigningKey = new SymmetricSecurityKey(key)
+           IssuerSigningKey = new SymmetricSecurityKey(key),
+
+           RoleClaimType = ClaimTypes.Role,
        };
    });
 
