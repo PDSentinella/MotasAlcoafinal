@@ -23,11 +23,19 @@ namespace MotasAlcoafinal.Controllers
             _roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Exibe o formulário de registo
+        /// </summary>
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
+
+        /// <summary>
+        /// Processa o registo de um novo utilizador
+        /// </summary>
+        /// <param name="model">Dados do registo</param>
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -63,8 +71,11 @@ namespace MotasAlcoafinal.Controllers
             return View(model);
         }
 
-
-
+        /// <summary>
+        /// Confirma o e-mail do utilizador
+        /// </summary>
+        /// <param name="userId">ID do utilizador</param>
+        /// <param name="token">Token de confirmação</param>
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -79,15 +90,19 @@ namespace MotasAlcoafinal.Controllers
             return result.Succeeded ? View("ConfirmEmailSuccess") : View("Error");
         }
 
-
-
+        /// <summary>
+        /// Exibe o formulário de login
+        /// </summary>
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-
+        /// <summary>
+        /// Processa o login do utilizador
+        /// </summary>
+        /// <param name="model">Dados do login</param>
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -110,18 +125,19 @@ namespace MotasAlcoafinal.Controllers
             return View(model);
         }
 
-
-
-
-
+        /// <summary>
+        /// Exibe o formulário para recuperação da password
+        /// </summary>
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
         }
 
-
-
+        /// <summary>
+        /// Processa a recuperação da password
+        /// </summary>
+        /// <param name="model">E-mail para recuperação</param>
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
@@ -145,7 +161,11 @@ namespace MotasAlcoafinal.Controllers
             return View("ForgotPasswordConfirmation");
         }
 
-
+        /// <summary>
+        /// Exibe o formulário para redefinir a password
+        /// </summary>
+        /// <param name="token">Token de reset</param>
+        /// <param name="email">E-mail do utilizador</param>
         [HttpGet]
         public IActionResult ResetPassword(string token, string email)
         {
@@ -156,7 +176,10 @@ namespace MotasAlcoafinal.Controllers
             return View(model);
         }
 
-
+        /// <summary>
+        /// Processa a redefinição da password
+        /// </summary>
+        /// <param name="model">Dados para reset</param>
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
@@ -176,16 +199,20 @@ namespace MotasAlcoafinal.Controllers
             return View(model);
         }
 
-
-
+        /// <summary>
+        /// Exibe a confirmação de reset de password
+        /// </summary>
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
         {
             return View(); 
         }
 
-
-
+        /// <summary>
+        /// Atribui uma role a um utilizador
+        /// </summary>
+        /// <param name="userId">ID do utilizador</param>
+        /// <param name="role">Role a atribuir</param>
         [HttpPost]
         public async Task<IActionResult> AssignRole(string userId, string role)
         {
@@ -209,11 +236,9 @@ namespace MotasAlcoafinal.Controllers
             return BadRequest("Erro ao atribuir a role.");
         }
 
-
-
-
-
-        
+        /// <summary>
+        /// Faz logout do utilizador
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

@@ -20,6 +20,12 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Exibe a lista de motocicletas com paginação e pesquisa
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
@@ -44,6 +50,11 @@ namespace MotasAlcoafinal.Controllers
 
             return View(motocicletasList);
         }
+
+        /// <summary>
+        /// Exibe os detalhes de uma motocicleta específica
+        /// </summary>
+        /// <param name="id">ID da motocicleta</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -57,7 +68,11 @@ namespace MotasAlcoafinal.Controllers
             return View(motocicleta);
         }
 
-        [Authorize("Mecanico, Root")]
+        /// <summary>
+        /// Exibe o formulário de edição de motocicleta
+        /// </summary>
+        /// <param name="id">ID da motocicleta</param>
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var motocicleta = await _context.Motocicletas.FindAsync(id);
@@ -69,9 +84,14 @@ namespace MotasAlcoafinal.Controllers
             return View(motocicleta);
         }
 
+        /// <summary>
+        /// Processa a edição de uma motocicleta
+        /// </summary>
+        /// <param name="id">ID da motocicleta</param>
+        /// <param name="motocicleta">Dados da motocicleta</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id,[Bind("Id, ClienteId, Marca, Modelo, Ano, Placa")] Motocicletas motocicleta)
         {
             if (id != motocicleta.Id)
@@ -102,22 +122,34 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
             return View(motocicleta);
         }
+
+        /// <summary>
+        /// Verifica se uma motocicleta existe
+        /// </summary>
+        /// <param name="id">ID da motocicleta</param>
         [Authorize]
         private bool MotocicletaExists(int id)
         {
             return _context.Motocicletas.Any(e => e.Id == id);
         }
 
-        [Authorize("Mecanico, Root")]
+        /// <summary>
+        /// Exibe o formulário de criação da motocicleta
+        /// </summary>
+        [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome");
             return View();
         }
 
+        /// <summary>
+        /// Processa a criação de uma nova motocicleta
+        /// </summary>
+        /// <param name="motocicleta">Dados da motocicleta</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Mecanico, Root")]
+        [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")] Motocicletas motocicleta)
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
@@ -131,6 +163,5 @@ namespace MotasAlcoafinal.Controllers
 
             return View(motocicleta);
         }
-
     }
 }

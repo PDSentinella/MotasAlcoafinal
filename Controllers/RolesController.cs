@@ -17,6 +17,9 @@ namespace MotasAlcoafinal.Controllers
             _roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Carrega dados para ViewBags com utilizadores e roles
+        /// </summary>
         private async Task CarregarViewBagsAsync()
         {
             var users = _userManager.Users.ToList();
@@ -33,12 +36,18 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Roles = roles;
         }
 
+        /// <summary>
+        /// Exibe a lista de utilizadores e as suas roles
+        /// </summary>
         public async Task<IActionResult> Index()
         {
             await CarregarViewBagsAsync();
             return View(_userManager.Users.ToList());
         }
 
+        /// <summary>
+        /// Exibe o formulário para atribuir roles
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> AssignRole()
         {
@@ -46,6 +55,11 @@ namespace MotasAlcoafinal.Controllers
             return View("Index", _userManager.Users.ToList());
         }
 
+        /// <summary>
+        /// Processa a atribuição de uma role a um utilizador
+        /// </summary>
+        /// <param name="userId">ID do utilizador</param>
+        /// <param name="role">Role a atribuir</param>
         [HttpPost]
         public async Task<IActionResult> AssignRole(string userId, string role)
         {
@@ -79,6 +93,10 @@ namespace MotasAlcoafinal.Controllers
             return View("Index", _userManager.Users.ToList());
         }
 
+        /// <summary>
+        /// Remove um utilizador do sistema
+        /// </summary>
+        /// <param name="userId">ID do utilizador a remover</param>
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string userId)
         {
