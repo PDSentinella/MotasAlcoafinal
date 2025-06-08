@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---------- ServiÁos ----------
+// ---------- Servi√ßos ----------
 builder.Services.AddDbContext<MotasAlcoaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -28,16 +28,16 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddControllersWithViews();
 
-// ServiÁo de email
+// Servi√ßo de email
 builder.Services.AddTransient<EmailService>();
 
-// ConfiguraÁ„o de cookies 
+// Configura√ß√£o de cookies 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Redireciona para login se n„o autenticado
+    options.LoginPath = "/Account/Login"; // Redireciona para login se n√£o autenticado
 });
 
-// Eliminar a proteÁ„o de 'ciclos' qd se faz uma pesquisa que envolva um relacionamento 1-N em Linq
+// Eliminar a prote√ß√£o de 'ciclos' qd se faz uma pesquisa que envolva um relacionamento 1-N em Linq
 // https://code-maze.com/aspnetcore-handling-circular-references-when-working-with-json/
 // https://marcionizzola.medium.com/como-resolver-jsonexception-a-possible-object-cycle-was-detected-27e830ea78e5
 builder.Services.AddControllers()
@@ -74,8 +74,32 @@ builder.Services.AddAuthentication(options => { })
    });
 
 
-// configuraÁ„o do JWT
+// configura√ß√£o do JWT
 builder.Services.AddScoped<TokenService>();
+
+
+// Adiciona o Swagger
+// builder.Services.AddEndpointsApiExplorer();   // necess√°ria apenas para APIs m√≠nimas. 
+//builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Minha API de gest√£o de uma oficina de motos",
+        Version = "v1",
+        Description = "API para gest√£o de clientes, encomendas, servi√ßos, pe√ßas e motocicletas"
+    });
+
+    // Caminho para o XML gerado
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    
+    c.IncludeXmlComments(xmlPath);
+
+});
+
+//declarar o servi√ßo do Signal R 
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -84,7 +108,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts(); // SeguranÁa HTTPS
+    app.UseHsts(); // Seguran√ßa HTTPS
 }
 
 app.UseHttpsRedirection();
@@ -92,7 +116,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// AutenticaÁ„o e AutorizaÁ„o
+// Autentica√ß√£o e Autoriza√ß√£o
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -108,6 +132,11 @@ using (var scope = app.Services.CreateScope())
 {
     await SeedData.InitializeAsync(scope.ServiceProvider);
 }
+
+//criar uma ponte enrre o nosso servi√ßo signal R (o ServicosHub)
+//e o javascript do browser
+app.MapHub<ServicosHub>("/servicoshub");
+
 
 // ---------- Start ----------
 await app.RunAsync();
