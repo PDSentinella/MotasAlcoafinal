@@ -18,6 +18,13 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Exibe a lista de encomendas com paginação, pesquisa e filtro por status
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="statusFilter">Filtro por status</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, string statusFilter, int pageNumber = 1, int pageSize = 10)
         {
@@ -38,6 +45,7 @@ namespace MotasAlcoafinal.Controllers
             var encomendasList = await encomendas
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Include(e => e.EncomendaPecas).ThenInclude(ep => ep.Peca)
                 .ToListAsync();
 
             ViewBag.TotalPages = (int)Math.Ceiling(totalEncomendas / (double)pageSize);
@@ -48,6 +56,10 @@ namespace MotasAlcoafinal.Controllers
             return View(encomendasList);
         }
 
+        /// <summary>
+        /// Exibe os detalhes de uma encomenda específica
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -62,20 +74,56 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
-        [Authorize("Gestor,Root")]
+        /// <summary>
+        /// Exibe o formulário de criação da encomenda
+        /// </summary>
+        [Authorize(Roles = "Gestor,Root")]
         public IActionResult Create()
         {
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View();
         }
 
+        /// <summary>
+        /// Processa a criação de uma nova encomenda
+        /// </summary>
+        /// <param name="encomenda">Dados da encomenda</param>
+        /// <param name="pecasIds">IDs das peças</param>
+        /// <param name="quantidades">Quantidades das peças (string separada por vírgulas)</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Gestor,Root")]
-        public async Task<IActionResult> Create([Bind("DataPedido, Status ")]Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
+        [Authorize(Roles = "Gestor,Root")]
+        public async Task<IActionResult> Create([Bind("DataPedido, Status ")] Encomendas encomenda, List<int> pecasIds, string quantidades)
         {
+            // Parsing das quantidades separadas por vírgula
+            List<int> quantidadesList = new List<int>();
+            if (!string.IsNullOrWhiteSpace(quantidades))
+            {
+                var partes = quantidades.Split(',');
+                foreach (var parte in partes)
+                {
+                    if (int.TryParse(parte.Trim(), out int q) && q > 0)
+                    {
+                        quantidadesList.Add(q);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Por favor, insira apenas números inteiros positivos nas quantidades, separados por vírgula.");
+                        ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                        return View(encomenda);
+                    }
+                }
+            }
+            if (pecasIds == null || quantidadesList == null || pecasIds.Count != quantidadesList.Count || pecasIds.Count == 0)
+            {
+                ModelState.AddModelError("", "Selecione as peças e insira as quantidades correspondentes, separadas por vírgula.");
+                ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                return View(encomenda);
+            }
+
             if (ModelState.IsValid)
             {
+                // Removida a validação de estoque suficiente para permitir encomendar peças mesmo com estoque 0 ou negativo
                 _context.Add(encomenda);
                 await _context.SaveChangesAsync();
 
@@ -85,7 +133,7 @@ namespace MotasAlcoafinal.Controllers
                     {
                         EncomendaId = encomenda.Id,
                         PecaId = pecasIds[i],
-                        Quantidade = quantidades[i]
+                        Quantidade = quantidadesList[i]
                     };
                     _context.EncomendaPecas.Add(encomendaPeca);
                 }
@@ -97,7 +145,11 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
-        [Authorize("Gestor,Root")]
+        /// <summary>
+        /// Exibe o formulário de edição da encomenda
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        [Authorize(Roles = "Gestor,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var encomenda = await _context.Encomendas
@@ -111,9 +163,16 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        /// <summary>
+        /// Processa a edição de uma encomenda
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        /// <param name="encomenda">Dados da encomenda</param>
+        /// <param name="pecasIds">IDs das peças</param>
+        /// <param name="quantidades">Quantidades das peças</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Gestor,Root")]
+        [Authorize(Roles = "Gestor,Root")]
         public async Task<IActionResult> Edit(int id, Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
             if (id != encomenda.Id)
@@ -125,24 +184,51 @@ namespace MotasAlcoafinal.Controllers
             {
                 try
                 {
-                    _context.Update(encomenda);
+                    // Buscar o estado anterior da encomenda
+                    var encomendaAntiga = await _context.Encomendas
+                        .Include(e => e.EncomendaPecas)
+                        .FirstOrDefaultAsync(e => e.Id == id);
+
+                    var statusAnterior = encomendaAntiga.Status;
+
+                    _context.Entry(encomendaAntiga).CurrentValues.SetValues(encomenda);
                     await _context.SaveChangesAsync();
 
-                    var existingEncomendaPecas = _context.EncomendaPecas.Where(ep => ep.EncomendaId == id).ToList();
-                    _context.EncomendaPecas.RemoveRange(existingEncomendaPecas);
-                    await _context.SaveChangesAsync();
-
-                    for (int i = 0; i < pecasIds.Count; i++)
+                    // Se mudou de Pendente para Entregue, atualizar estoque
+                    if (statusAnterior == Encomendas.Estados.Pendente && encomenda.Status == Encomendas.Estados.Entregue)
                     {
-                        var encomendaPeca = new EncomendaPecas
+                        // Buscar as peças da encomenda antiga
+                        var encomendaPecas = await _context.EncomendaPecas.Where(ep => ep.EncomendaId == id).ToListAsync();
+                        foreach (var ep in encomendaPecas)
                         {
-                            EncomendaId = encomenda.Id,
-                            PecaId = pecasIds[i],
-                            Quantidade = quantidades[i]
-                        };
-                        _context.EncomendaPecas.Add(encomendaPeca);
+                            var peca = await _context.Pecas.FirstOrDefaultAsync(p => p.Id == ep.PecaId);
+                            if (peca != null)
+                            {
+                                peca.QuantidadeEstoque += ep.Quantidade;
+                            }
+                        }
+                        await _context.SaveChangesAsync();
                     }
-                    await _context.SaveChangesAsync();
+
+                    // Atualizar as peças da encomenda
+                    if (pecasIds != null && quantidades != null && pecasIds.Count == quantidades.Count && pecasIds.Count > 0)
+                    {
+                        var existingEncomendaPecas = _context.EncomendaPecas.Where(ep => ep.EncomendaId == id).ToList();
+                        _context.EncomendaPecas.RemoveRange(existingEncomendaPecas);
+                        await _context.SaveChangesAsync();
+                        for (int i = 0; i < pecasIds.Count; i++)
+                        {
+                            var encomendaPeca = new EncomendaPecas
+                            {
+                                EncomendaId = encomenda.Id,
+                                PecaId = pecasIds[i],
+                                Quantidade = quantidades[i]
+                            };
+                            _context.EncomendaPecas.Add(encomendaPeca);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                    // Se não vierem peças novas, não remove as antigas!
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,6 +247,10 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        /// <summary>
+        /// Verifica se uma encomenda existe
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
         private bool EncomendaExists(int id)
         {
             return _context.Encomendas.Any(e => e.Id == id);

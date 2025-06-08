@@ -34,8 +34,10 @@
                 <thead class="table-primary">
                     <tr>
                         <th>Data</th>
+                        <th>Descrição</th>
                         <th>Custo Total</th>
                         <th>Motocicleta</th>
+                        <th>Peças Usadas</th>
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -43,7 +45,7 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="4" class="text-muted py-4">Nenhum serviço encontrado.</td>
+                            <td colspan="6" class="text-muted py-4">Nenhum serviço encontrado.</td>
                         </tr>
                     }
                     else
@@ -52,8 +54,26 @@
                         {
                             <tr>
                                 <td>@servico.Data.ToString("dd/MM/yyyy")</td>
+                                <td>@servico.Descricao</td>
                                 <td>@servico.CustoTotal.ToString("C")</td>
                                 <td>@servico.Motocicleta?.Modelo</td>
+                                <td>
+                                    @if (servico.ServicoPecas != null && servico.ServicoPecas.Any())
+                                    {
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach (var sp in servico.ServicoPecas)
+                                            {
+                                                <li>
+                                                    @sp.Peca?.Nome - <span class="text-primary fw-bold">@sp.QuantidadeUsada</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Nenhuma peça</span>
+                                    }
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <a asp-action="Details" asp-route-id="@servico.Id" class="btn btn-outline-primary btn-sm rounded-pill">

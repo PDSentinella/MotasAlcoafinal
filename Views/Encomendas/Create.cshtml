@@ -33,11 +33,13 @@
                             <option value="@peca.Value">@peca.Text</option>
                         }
                     </select>
+                    <small class="form-text text-muted">Segure Ctrl (Windows) ou Command (Mac) para selecionar múltiplas peças.</small>
                 </div>
 
                 <div class="mb-3">
                     <label for="quantidades" class="form-label">Quantidades (Separadas por vírgula)</label>
                     <input id="quantidades" name="quantidades" class="form-control" />
+                    <small class="form-text text-muted">Insira uma quantidade para cada peça selecionada, na mesma ordem, separadas por vírgula. Ex: 2,1,5</small>
                 </div>
 
                 <div class="d-flex justify-content-between">
@@ -48,3 +50,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var pecas = document.getElementById('pecas');
+        var quantidades = document.getElementById('quantidades').value.split(',').map(q => q.trim()).filter(q => q !== '');
+        var pecasSelecionadas = Array.from(pecas.selectedOptions);
+        if (pecasSelecionadas.length !== quantidades.length) {
+            alert('O número de peças selecionadas deve ser igual ao número de quantidades inseridas.');
+            e.preventDefault();
+        }
+    });
+</script>

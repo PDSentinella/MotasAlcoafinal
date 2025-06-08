@@ -15,16 +15,25 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    /// <summary>
+    /// Exibe a página inicial
+    /// </summary>
     public IActionResult Index()
     {
         return View();
     }
 
+    /// <summary>
+    /// Exibe a página de privacidade
+    /// </summary>
     public IActionResult Privacy()
     {
         return View();
     }
 
+    /// <summary>
+    /// Exibe a página de erro
+    /// </summary>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
