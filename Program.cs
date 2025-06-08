@@ -7,6 +7,8 @@ using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +79,24 @@ builder.Services.AddAuthentication(options => { })
 // configura√ß√£o do JWT
 builder.Services.AddScoped<TokenService>();
 
+// Adiciona o Swagger
+// builder.Services.AddEndpointsApiExplorer();   // necess·ria apenas para APIs mÌnimas. 
+//builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Minha API de gest„o de uma oficina de motos",
+        Version = "v1",
+        Description = "API para gest„o de clientes, encomendas, serviÁos, peÁas e motocicletas"
+    });
+
+    // Caminho para o XML gerado
+    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    //c.IncludeXmlComments(xmlPath);
+
+});
 
 // Adiciona o Swagger
 // builder.Services.AddEndpointsApiExplorer();   // necess√°ria apenas para APIs m√≠nimas. 
@@ -104,12 +124,26 @@ builder.Services.AddSignalR();
 
 var app = builder.Build();
 
+
+
+
+
+
 // ---------- Middlewares ----------
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+
+
+    //iniciar o 'middleware' do swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts(); // Seguran√ßa HTTPS
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
