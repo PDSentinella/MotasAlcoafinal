@@ -37,6 +37,8 @@ namespace MotasAlcoafinal.Controllers
             var totalServicos = await servicos.CountAsync();
             var servicosList = await servicos
                 .Include(s => s.Motocicleta)
+                .Include(s => s.ServicoPecas)
+                    .ThenInclude(sp => sp.Peca)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -103,6 +105,15 @@ namespace MotasAlcoafinal.Controllers
                         QuantidadeUsada = quantidades[i]
                     };
                     _context.ServicoPecas.Add(servicoPeca);
+
+                    // Descontar do estoque
+                    var peca = await _context.Pecas.FindAsync(pecasIds[i]);
+                    if (peca != null)
+                    {
+                        peca.QuantidadeEstoque -= quantidades[i];
+                        if (peca.QuantidadeEstoque < 0) peca.QuantidadeEstoque = 0;
+                        _context.Pecas.Update(peca);
+                    }
                 }
                 await _context.SaveChangesAsync();
 
@@ -157,6 +168,16 @@ namespace MotasAlcoafinal.Controllers
                     await _context.SaveChangesAsync();
 
                     var existingServicoPecas = _context.ServicoPecas.Where(sp => sp.ServicoId == id).ToList();
+                    // Repor estoque das peças removidas
+                    foreach (var sp in existingServicoPecas)
+                    {
+                        var peca = await _context.Pecas.FindAsync(sp.PecaId);
+                        if (peca != null)
+                        {
+                            peca.QuantidadeEstoque += sp.QuantidadeUsada;
+                            _context.Pecas.Update(peca);
+                        }
+                    }
                     _context.ServicoPecas.RemoveRange(existingServicoPecas);
                     await _context.SaveChangesAsync();
 
@@ -169,6 +190,15 @@ namespace MotasAlcoafinal.Controllers
                             QuantidadeUsada = quantidades[i]
                         };
                         _context.ServicoPecas.Add(servicoPeca);
+
+                        // Descontar do estoque
+                        var peca = await _context.Pecas.FindAsync(pecasIds[i]);
+                        if (peca != null)
+                        {
+                            peca.QuantidadeEstoque -= quantidades[i];
+                            if (peca.QuantidadeEstoque < 0) peca.QuantidadeEstoque = 0;
+                            _context.Pecas.Update(peca);
+                        }
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -212,6 +242,16 @@ namespace MotasAlcoafinal.Controllers
         {
             if (ModelState.IsValid && servicoPeca.ServicoId != null)
             {
+                // Atualiza o stock da peça
+                var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
+                if (peca != null)
+                {
+                    peca.QuantidadeEstoque -= servicoPeca.QuantidadeUsada;
+                    if (peca.QuantidadeEstoque < 0)
+                        peca.QuantidadeEstoque = 0; // Nunca deixa negativo
+                    _context.Pecas.Update(peca);
+                }
+
                 var ser = new ServicoPecas
                 {
                     ServicoId = servicoPeca.ServicoId,
@@ -254,14 +294,24 @@ namespace MotasAlcoafinal.Controllers
         {
             if (ModelState.IsValid && servicoPeca.PecaId != null)
             {
-                var ser = new ServicoPecas
+                // Buscar o registro antigo
+                var antigo = await _context.ServicoPecas.AsNoTracking().FirstOrDefaultAsync(sp => sp.Id == servicoPeca.Id);
+                if (antigo != null)
                 {
-                    Id = servicoPeca.Id,
-                    ServicoId = servicoPeca.ServicoId,
-                    PecaId = servicoPeca.PecaId,
-                    QuantidadeUsada = servicoPeca.QuantidadeUsada
-                };
-                _context.Update(ser);
+                    var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
+                    if (peca != null)
+                    {
+                        // Repor o stock antigo
+                        peca.QuantidadeEstoque += antigo.QuantidadeUsada;
+                        // Subtrair o novo valor
+                        peca.QuantidadeEstoque -= servicoPeca.QuantidadeUsada;
+                        if (peca.QuantidadeEstoque < 0)
+                            peca.QuantidadeEstoque = 0;
+                        _context.Pecas.Update(peca);
+                    }
+                }
+
+                _context.Update(servicoPeca);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
             }
@@ -281,6 +331,15 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
+
+            // Repor o stock da peça
+            var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
+            if (peca != null)
+            {
+                peca.QuantidadeEstoque += servicoPeca.QuantidadeUsada;
+                _context.Pecas.Update(peca);
+            }
+
             _context.ServicoPecas.Remove(servicoPeca);
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = servicoPeca.ServicoId });

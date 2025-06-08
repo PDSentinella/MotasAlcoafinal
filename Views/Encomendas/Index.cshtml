@@ -11,7 +11,7 @@
         {
             <a class="btn btn-primary shadow rounded-pill px-4" asp-controller="Encomendas" asp-action="Create">
                 <i class="fas fa-plus-circle me-2"></i> Criar Encomenda
-        </a>
+            </a>
         }
     </div>
 
@@ -44,6 +44,7 @@
                     <tr>
                         <th>Data do Pedido</th>
                         <th>Status</th>
+                        <th>Peças Encomendadas</th>
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -53,6 +54,21 @@
                         <tr>
                             <td>@encomenda.DataPedido.ToString("dd/MM/yyyy")</td>
                             <td>@encomenda.Status</td>
+                            <td>
+                                @if (encomenda.EncomendaPecas != null && encomenda.EncomendaPecas.Any())
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var ep in encomenda.EncomendaPecas)
+                                        {
+                                            <li>@ep.Peca?.Nome - <span class="text-primary fw-bold">@ep.Quantidade</span></li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Nenhuma peça</span>
+                                }
+                            </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <a asp-action="Details" asp-route-id="@encomenda.Id" class="btn btn-outline-primary btn-sm rounded-pill">
