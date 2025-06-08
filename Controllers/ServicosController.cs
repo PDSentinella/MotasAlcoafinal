@@ -17,6 +17,12 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Exibe a lista de serviços com paginação e pesquisa
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
@@ -44,6 +50,10 @@ namespace MotasAlcoafinal.Controllers
             return View(servicosList);
         }
 
+        /// <summary>
+        /// Exibe os detalhes de um serviço específico
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -59,6 +69,9 @@ namespace MotasAlcoafinal.Controllers
             return View(servico);
         }
 
+        /// <summary>
+        /// Exibe o formulário de criação do serviço
+        /// </summary>
         [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
@@ -67,6 +80,12 @@ namespace MotasAlcoafinal.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Processa a criação de um novo serviço
+        /// </summary>
+        /// <param name="servico">Dados do serviço</param>
+        /// <param name="pecasIds">IDs das peças</param>
+        /// <param name="quantidades">Quantidades das peças</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -104,6 +123,11 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View(servico);
         }
+
+        /// <summary>
+        /// Exibe o formulário de edição do serviço
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -118,6 +142,14 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View(servico);
         }
+
+        /// <summary>
+        /// Processa a edição de um serviço
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
+        /// <param name="servico">Dados do serviço</param>
+        /// <param name="pecasIds">IDs das peças</param>
+        /// <param name="quantidades">Quantidades das peças</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -188,6 +220,10 @@ namespace MotasAlcoafinal.Controllers
             return View(servico);
         }
 
+        /// <summary>
+        /// Exibe o formulário para adicionar uma peça ao serviço
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
         [Authorize(Roles = "Mecanico,Root")]
         public IActionResult AddPeca(int id)
         {
@@ -195,6 +231,10 @@ namespace MotasAlcoafinal.Controllers
             return View(new ServicoPecas { ServicoId = id });
         }
 
+        /// <summary>
+        /// Processa a adição de uma peça ao serviço
+        /// </summary>
+        /// <param name="servicoPeca">Dados da relação serviço-peça</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -225,6 +265,11 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
             return View(servicoPeca);
         }
+
+        /// <summary>
+        /// Exibe o formulário de edição de uma peça no serviço
+        /// </summary>
+        /// <param name="id">ID da relação serviço-peça</param>
         public async Task<IActionResult> EditPeca(int id)
         {
             var servicoPeca = await _context.ServicoPecas
@@ -238,6 +283,10 @@ namespace MotasAlcoafinal.Controllers
             return View(servicoPeca);
         }
 
+        /// <summary>
+        /// Processa a edição de uma peça no serviço
+        /// </summary>
+        /// <param name="servicoPeca">Dados da relação serviço-peça</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -270,6 +319,10 @@ namespace MotasAlcoafinal.Controllers
             return View(servicoPeca);
         }
 
+        /// <summary>
+        /// Remove uma peça do serviço
+        /// </summary>
+        /// <param name="id">ID da relação serviço-peça</param>
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> DeletePeca(int id)
         {
@@ -291,6 +344,11 @@ namespace MotasAlcoafinal.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
         }
+
+        /// <summary>
+        /// Cria uma encomenda com todas as peças do serviço
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
         public async Task<IActionResult> EncomendarTodos(int id)
         {
             var servico = await _context.Servicos
@@ -326,6 +384,11 @@ namespace MotasAlcoafinal.Controllers
 
             return RedirectToAction("Details", "Encomendas", new { id = encomenda.Id });
         }
+
+        /// <summary>
+        /// Verifica se um serviço existe
+        /// </summary>
+        /// <param name="id">ID do serviço</param>
         private bool ServicoExists(int id)
         {
             return _context.Servicos.Any(e => e.Id == id);

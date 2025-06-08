@@ -5,6 +5,7 @@ using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 namespace MotasAlcoafinal.Controllers
 {
     [Authorize]
@@ -16,6 +17,13 @@ namespace MotasAlcoafinal.Controllers
         {
             _context = context;
         }
+
+        /// <summary>
+        /// Exibe a lista de clientes com paginação e pesquisa
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
@@ -40,6 +48,10 @@ namespace MotasAlcoafinal.Controllers
             return View(clientesList);
         }
 
+        /// <summary>
+        /// Exibe os detalhes de um cliente específico
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -53,7 +65,10 @@ namespace MotasAlcoafinal.Controllers
             return View(cliente);
         }
 
-
+        /// <summary>
+        /// Exibe o formulário de edição de cliente
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -65,6 +80,11 @@ namespace MotasAlcoafinal.Controllers
             return View(cliente);
         }
 
+        /// <summary>
+        /// Processa a edição de um cliente
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
+        /// <param name="cliente">Dados do cliente</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -98,18 +118,29 @@ namespace MotasAlcoafinal.Controllers
             return View(cliente);
         }
 
+        /// <summary>
+        /// Verifica se um cliente existe
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
         [Authorize]
         private bool ClienteExists(int id)
         {
             return _context.Clientes.Any(e => e.Id == id);
         }
 
+        /// <summary>
+        /// Exibe o formulário de criação de cliente
+        /// </summary>
         [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
             return View();
         }
 
+        /// <summary>
+        /// Processa a criação de um novo cliente
+        /// </summary>
+        /// <param name="cliente">Dados do cliente</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -124,6 +155,10 @@ namespace MotasAlcoafinal.Controllers
             return View(cliente);
         }
 
+        /// <summary>
+        /// Remove um cliente
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
@@ -140,6 +175,5 @@ namespace MotasAlcoafinal.Controllers
             TempData["SuccessMessage"] = "Cliente removido com sucesso.";
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

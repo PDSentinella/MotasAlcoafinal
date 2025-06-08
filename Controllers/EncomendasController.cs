@@ -18,6 +18,13 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Exibe a lista de encomendas com paginação, pesquisa e filtro por status
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="statusFilter">Filtro por status</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, string statusFilter, int pageNumber = 1, int pageSize = 10)
         {
@@ -49,6 +56,10 @@ namespace MotasAlcoafinal.Controllers
             return View(encomendasList);
         }
 
+        /// <summary>
+        /// Exibe os detalhes de uma encomenda específica
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -63,7 +74,10 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
-        [Authorize("Gestor,Root")]
+        /// <summary>
+        /// Exibe o formulário de criação da encomenda
+        /// </summary>
+        [Authorize(Roles = "Gestor,Root")]
         public IActionResult Create()
         {
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
@@ -131,7 +145,11 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
-        [Authorize("Gestor,Root")]
+        /// <summary>
+        /// Exibe o formulário de edição da encomenda
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        [Authorize(Roles = "Gestor,Root")]
         public async Task<IActionResult> Edit(int id)
         {
             var encomenda = await _context.Encomendas
@@ -145,9 +163,16 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        /// <summary>
+        /// Processa a edição de uma encomenda
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        /// <param name="encomenda">Dados da encomenda</param>
+        /// <param name="pecasIds">IDs das peças</param>
+        /// <param name="quantidades">Quantidades das peças</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("Gestor,Root")]
+        [Authorize(Roles = "Gestor,Root")]
         public async Task<IActionResult> Edit(int id, Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
             if (id != encomenda.Id)
@@ -222,6 +247,10 @@ namespace MotasAlcoafinal.Controllers
             return View(encomenda);
         }
 
+        /// <summary>
+        /// Verifica se uma encomenda existe
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
         private bool EncomendaExists(int id)
         {
             return _context.Encomendas.Any(e => e.Id == id);

@@ -16,6 +16,12 @@ namespace MotasAlcoafinal.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Exibe a lista de peças com paginação e pesquisa
+        /// </summary>
+        /// <param name="searchString">Termo de pesquisa</param>
+        /// <param name="pageNumber">Número da página</param>
+        /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
         {
@@ -40,6 +46,10 @@ namespace MotasAlcoafinal.Controllers
             return View(pecasList);
         }
 
+        /// <summary>
+        /// Exibe os detalhes de uma peça específica
+        /// </summary>
+        /// <param name="id">ID da peça</param>
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
@@ -51,12 +61,19 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        /// <summary>
+        /// Exibe o formulário de criação da peça
+        /// </summary>
         [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
+        /// <summary>
+        /// Processa a criação de uma nova peça
+        /// </summary>
+        /// <param name="peca">Dados da peça</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -71,6 +88,10 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        /// <summary>
+        /// Exibe o formulário de edição da peça
+        /// </summary>
+        /// <param name="id">ID da peça</param>
         [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
@@ -81,6 +102,12 @@ namespace MotasAlcoafinal.Controllers
             }
             return View(peca);
         }
+
+        /// <summary>
+        /// Processa a edição de uma peça
+        /// </summary>
+        /// <param name="id">ID da peça</param>
+        /// <param name="peca">Dados da peça</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -114,6 +141,10 @@ namespace MotasAlcoafinal.Controllers
             return View(peca);
         }
 
+        /// <summary>
+        /// Verifica se uma peça existe
+        /// </summary>
+        /// <param name="id">ID da peça</param>
         [Authorize]
         private bool PecaExists(int id)
         {
