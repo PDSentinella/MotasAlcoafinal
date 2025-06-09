@@ -23,13 +23,13 @@ namespace MotasAlcoafinal.Controllers.API
     public class AuthController : ControllerBase
     {
         private readonly MotasAlcoaContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _config;
 
         public AuthController(MotasAlcoaContext context,
-           UserManager<IdentityUser> userManager,
-           SignInManager<IdentityUser> signInManager,
+           UserManager<ApplicationUser> userManager,
+           SignInManager<ApplicationUser> signInManager,
            IConfiguration config)
         {
             _context = context;
@@ -53,6 +53,12 @@ namespace MotasAlcoafinal.Controllers.API
             var user = await _userManager.FindByEmailAsync(login.UserName);
             if (user == null) return Unauthorized();
 
+            // Bloquear login se não estiver aprovado
+            if (!user.Aprovado)
+            {
+                return Unauthorized(new { message = "A sua conta ainda não foi aprovada por um administrador." });
+            }
+
             // se chego aqui, é porque o 'username' existe
             // mas, a password é válida?
             var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
@@ -71,7 +77,7 @@ namespace MotasAlcoafinal.Controllers.API
         /// </summary>
         /// <param name="username">Nome do utilizador associado ao token</param>
         /// <returns>Retorna o token como uma string</returns>
-        private async Task<string> GenerateJwtToken(IdentityUser user)
+        private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             // Claims básicas: nome e ID do token
             var claims = new List<Claim>

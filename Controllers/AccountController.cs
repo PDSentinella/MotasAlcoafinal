@@ -10,12 +10,12 @@ namespace MotasAlcoafinal.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly EmailService _emailService;
         private readonly RoleManager<IdentityRole> _roleManager; 
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, EmailService emailService, RoleManager<IdentityRole> roleManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, EmailService emailService, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,7 +41,7 @@ namespace MotasAlcoafinal.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Aprovado = false };
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
@@ -109,9 +109,16 @@ namespace MotasAlcoafinal.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null && !user.Aprovado)
+            {
+                ModelState.AddModelError("", "A sua conta ainda não foi aprovada por um administrador.");
+                return View(model);
+            }
+
             var result = await _signInManager.PasswordSignInAsync(
-                model.Email,              // agora usa o email do formulário
-                model.Password,           // e a password que o utilizador introduziu
+                model.Email,
+                model.Password,
                 model.RememberMe,
                 lockoutOnFailure: false
             );

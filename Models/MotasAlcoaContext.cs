@@ -7,7 +7,7 @@ using motasAlcoafinal.Models;
 
 namespace MotasAlcoafinal.Models
 {
-    public class MotasAlcoaContext : IdentityDbContext<IdentityUser>
+    public class MotasAlcoaContext : IdentityDbContext<ApplicationUser>
     {
         public MotasAlcoaContext(DbContextOptions<MotasAlcoaContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
