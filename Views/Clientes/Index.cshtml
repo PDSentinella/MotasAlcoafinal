@@ -9,7 +9,7 @@
         <h2 class="fw-bold text-danger">📋 Lista de Clientes</h2>
         @if(User.IsInRole("Mecanico") || User.IsInRole("Root")){
         <a class="btn btn-primary shadow rounded-pill px-4" asp-controller="Clientes" asp-action="Create">
-            <i class="fas fa-user-plus me-2"></i> Criar Cliente
+            <i class="fas fa-user-plus me-2"></i> Registar Cliente
         </a>
         }
     </div>

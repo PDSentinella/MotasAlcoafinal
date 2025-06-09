@@ -109,7 +109,7 @@ else if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
     <div class="container mb-5">
         <div class="row justify-content-center mb-4">
             <div class="col-md-4 d-flex justify-content-center mb-4">
-                <div class="card text-white bg-blue card-custom text-center p-3 w-100">
+                <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Create", "Clientes")'">
                     <i class="bi bi-person-plus display-4"></i>
                     <div class="card-body">
                         <h5 class="card-title">Registar Cliente</h5>
@@ -118,7 +118,7 @@ else if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
                 </div>
             </div>
             <div class="col-md-4 d-flex justify-content-center mb-4">
-                <div class="card text-white bg-danger card-custom text-center p-3 w-100">
+                <div class="card text-white bg-danger card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Create", "Motocicletas")'">
                     <i class="bi bi-bicycle display-4"></i>
                     <div class="card-body">
                         <h5 class="card-title">Nova Motocicleta</h5>
@@ -130,7 +130,7 @@ else if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
 
         <div class="row justify-content-center">
             <div class="col-md-4 d-flex justify-content-center mb-4">
-                <div class="card text-white bg-blue card-custom text-center p-3 w-100">
+                <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Create", "Servicos")'">
                     <i class="bi bi-wrench-adjustable-circle display-4"></i>
                     <div class="card-body">
                         <h5 class="card-title">Criar Serviço</h5>

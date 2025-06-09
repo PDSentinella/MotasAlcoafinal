@@ -8,10 +8,10 @@ namespace MotasAlcoafinal.Controllers
     [Authorize(Roles = "Root")]
     public class RolesController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RolesController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public RolesController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -42,7 +42,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Index()
         {
             await CarregarViewBagsAsync();
-            return View(_userManager.Users.ToList());
+            return View(_userManager.Users.OfType<ApplicationUser>().ToList());
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> AssignRole()
         {
             await CarregarViewBagsAsync();
-            return View("Index", _userManager.Users.ToList());
+            return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 ModelState.AddModelError("", "Você não pode alterar a sua própria role.");
                 await CarregarViewBagsAsync();
-                return View("Index", _userManager.Users.ToList());
+                return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
             }
             if (user != null)
             {
@@ -90,7 +90,7 @@ namespace MotasAlcoafinal.Controllers
             }
 
             await CarregarViewBagsAsync();
-            return View("Index", _userManager.Users.ToList());
+            return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
         }
 
         /// <summary>
@@ -125,6 +125,33 @@ namespace MotasAlcoafinal.Controllers
             }
             await CarregarViewBagsAsync();
             return View("Index",_userManager.Users.ToList());
+        }
+
+        /// <summary>
+        /// Aprova ou desaprova um utilizador
+        /// </summary>
+        /// <param name="userId">ID do utilizador</param>
+        [HttpPost]
+        public async Task<IActionResult> ApproveUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Utilizador não encontrado.");
+                await CarregarViewBagsAsync();
+                return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
+            }
+            // Não permitir aprovar/desaprovar a si próprio
+            if (user.UserName == User.Identity.Name)
+            {
+                ModelState.AddModelError("", "Não pode aprovar/desaprovar a si próprio.");
+                await CarregarViewBagsAsync();
+                return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
+            }
+            user.Aprovado = !user.Aprovado;
+            await _userManager.UpdateAsync(user);
+            await CarregarViewBagsAsync();
+            return View("Index", _userManager.Users.OfType<ApplicationUser>().ToList());
         }
     }
 }

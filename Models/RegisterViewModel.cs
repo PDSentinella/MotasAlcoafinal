@@ -2,13 +2,19 @@
 
 namespace motasAlcoafinal.Models
 {
-    ///
-    /// <summary>
-    /// Representa a relação entre uma encomenda e as peças associadas.
-    /// Cada instância desta classe indica a quantidade de uma peça específica 
-    /// dentro de uma determinada encomenda.
-    /// </summary>
 
+    /// <summary>
+    /// ViewModel para o registo de utilizadores
+    /// /// </summary>
+    /// using System.ComponentModel.DataAnnotations;
+    /// using System.ComponentModel.DataAnnotations.Schema;
+    /// using System.ComponentModel.DataAnnotations;
+    /// using System.ComponentModel.DataAnnotations.Schema;
+    /// using System.ComponentModel.DataAnnotations.Schema;
+    ///     
+    /// /// <remarks>
+    /// Esta classe é usada para capturar os dados necessários para o registo de um novo utilizador.
+    /// </remarks>
     public class RegisterViewModel
     {
         [Required]

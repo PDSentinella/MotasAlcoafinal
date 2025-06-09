@@ -17,7 +17,7 @@ builder.Services.AddDbContext<MotasAlcoaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity (utilizador e roles)
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
 })
@@ -102,21 +102,21 @@ builder.Services.AddSwaggerGen(c => {
 // builder.Services.AddEndpointsApiExplorer();   // necessária apenas para APIs mínimas. 
 //builder.Services.AddSwaggerGen();
 
-builder.Services.AddSwaggerGen(c => {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Minha API de gestão de uma oficina de motos",
-        Version = "v1",
-        Description = "API para gestão de clientes, encomendas, serviços, peças e motocicletas"
-    });
+//builder.Services.AddSwaggerGen(c => {
+//    c.SwaggerDoc("v1", new OpenApiInfo
+//    {
+//        Title = "Minha API de gestão de uma oficina de motos",
+//        Version = "v1",
+//        Description = "API para gestão de clientes, encomendas, serviços, peças e motocicletas"
+//    });
 
     // Caminho para o XML gerado
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     
-    c.IncludeXmlComments(xmlPath);
+//    c.IncludeXmlComments(xmlPath);
 
-});
+//});
 
 //declarar o serviço do Signal R 
 builder.Services.AddSignalR();
@@ -169,7 +169,7 @@ using (var scope = app.Services.CreateScope())
 
 //criar uma ponte enrre o nosso serviço signal R (o ServicosHub)
 //e o javascript do browser
-app.MapHub<ServicosHub>("/servicoshub");
+//app.MapHub<ServicosHub>("/servicoshub");
 
 
 // ---------- Start ----------

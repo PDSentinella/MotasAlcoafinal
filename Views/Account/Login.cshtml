@@ -61,6 +61,13 @@
 
     <h2>Login</h2>
 
+    @if (ViewData.ModelState[""] != null && ViewData.ModelState[""]?.Errors.Any(e => e.ErrorMessage.Contains("aprovada")) == true)
+    {
+        <div class="alert alert-warning text-center">
+            A sua conta ainda não foi aprovada por um administrador. Por favor, aguarde a aprovação.
+        </div>
+    }
+
     <form asp-action="Login" method="post">
         <div class="form-group mb-3">
             <label asp-for="Email" class="form-label"></label>
@@ -80,7 +87,10 @@
         </div>
 
         <div class="mb-3 text-center">
-            <a asp-action="ForgotPassword">Esqueceu-se da sua password?</a>
+            <a id="forgotPasswordLink" asp-action="ForgotPassword">Esqueceu-se da sua password?</a>
+        </div>
+        <div class="mb-3 text-center">
+            <a asp-action="Register">Crie a sua conta?</a>
         </div>
 
         <div class="d-grid">
@@ -88,3 +98,16 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('forgotPasswordLink').addEventListener('click', function (e) {
+            var email = document.querySelector('input[name="Email"]').value;
+            if (email) {
+                e.preventDefault();
+                var url = this.getAttribute('href') || this.href;
+                window.location.href = url + '?email=' + encodeURIComponent(email);
+            }
+        });
+    </script>
+}

@@ -19,7 +19,7 @@ namespace MotasAlcoafinal.Services
             _config = config;
         }
 
-        public string GenerateToken(IdentityUser user)
+        public string GenerateToken(ApplicationUser user)
         {
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));

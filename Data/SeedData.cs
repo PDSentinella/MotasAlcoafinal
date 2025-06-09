@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MotasAlcoafinal.Models;
 
 namespace MotasAlcoafinal.Data
 {
@@ -7,7 +8,7 @@ namespace MotasAlcoafinal.Data
         public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             string[] roles = { "Gestor", "Mecanico", "Root" };
 
@@ -25,11 +26,12 @@ namespace MotasAlcoafinal.Data
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                adminUser = new IdentityUser
+                adminUser = new ApplicationUser
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Aprovado = true
                 };
 
                 var result = await userManager.CreateAsync(adminUser, adminPassword);

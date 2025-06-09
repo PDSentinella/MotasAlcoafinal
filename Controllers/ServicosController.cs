@@ -259,6 +259,15 @@ namespace MotasAlcoafinal.Controllers
                     QuantidadeUsada = servicoPeca.QuantidadeUsada
                 };
                 _context.ServicoPecas.Add(ser);
+
+                // Atualizar o custo total do serviço
+                var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+                if (servico != null && peca != null)
+                {
+                    servico.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
+                    _context.Servicos.Update(servico);
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
             }
