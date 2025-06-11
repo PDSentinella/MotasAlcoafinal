@@ -77,6 +77,8 @@ namespace MotasAlcoafinal.Controllers
         {
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo");
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+            ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View();
         }
 
@@ -89,10 +91,34 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Create( [Bind("Descricao, Data, CustoTotal, MotocicletaId")]Servicos servico, List<int> pecasIds, List<int> quantidades)
+        public async Task<IActionResult> Create([Bind("Descricao, Data, CustoTotal, MotocicletaId")]Servicos servico, List<int> pecasIds, List<int> quantidades)
         {
             if (ModelState.IsValid)
             {
+                decimal totalPecas = 0;
+                for (int i = 0; i < pecasIds.Count; i++)
+                {
+                    var peca = await _context.Pecas.FindAsync(pecasIds[i]);
+                    if (peca != null)
+                    {
+                        if (quantidades[i] > peca.QuantidadeEstoque)
+                        {
+                            ModelState.AddModelError("", $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, solicitado: {quantidades[i]}.");
+                            // Aqui pode-se sugerir encomenda automática
+                            // return RedirectToAction("EncomendarPeca", new { pecaId = peca.Id, quantidade = quantidades[i] - peca.QuantidadeEstoque });
+                        }
+                        totalPecas += peca.Preco * quantidades[i];
+                    }
+                }
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+                    ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                    ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
+                    ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p); // garantir que PecasObj é passado
+                    return View(servico);
+                }
+                servico.CustoTotal += totalPecas;
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
 
@@ -119,8 +145,11 @@ namespace MotasAlcoafinal.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            // Sempre preenche os ViewBags, mesmo se não houver erro
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+            ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servico);
         }
 
@@ -228,6 +257,7 @@ namespace MotasAlcoafinal.Controllers
         public IActionResult AddPeca(int id)
         {
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(new ServicoPecas { ServicoId = id });
         }
 
@@ -242,10 +272,16 @@ namespace MotasAlcoafinal.Controllers
         {
             if (ModelState.IsValid && servicoPeca.ServicoId != null)
             {
-                // Atualiza o stock da peça
                 var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
                 if (peca != null)
                 {
+                    if (servicoPeca.QuantidadeUsada > peca.QuantidadeEstoque)
+                    {
+                        ModelState.AddModelError("", $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, solicitado: {servicoPeca.QuantidadeUsada}.");
+                        // Aqui pode-se sugerir encomenda automática
+                        ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
+                        return View(servicoPeca);
+                    }
                     peca.QuantidadeEstoque -= servicoPeca.QuantidadeUsada;
                     if (peca.QuantidadeEstoque < 0)
                         peca.QuantidadeEstoque = 0; // Nunca deixa negativo
@@ -289,6 +325,7 @@ namespace MotasAlcoafinal.Controllers
                 return NotFound();
             }
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servicoPeca);
         }
 
@@ -313,10 +350,26 @@ namespace MotasAlcoafinal.Controllers
                         // Repor o stock antigo
                         peca.QuantidadeEstoque += antigo.QuantidadeUsada;
                         // Subtrair o novo valor
+                        if (servicoPeca.QuantidadeUsada > peca.QuantidadeEstoque)
+                        {
+                            ModelState.AddModelError("", $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, solicitado: {servicoPeca.QuantidadeUsada}.");
+                            ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
+                            return View(servicoPeca);
+                        }
                         peca.QuantidadeEstoque -= servicoPeca.QuantidadeUsada;
                         if (peca.QuantidadeEstoque < 0)
                             peca.QuantidadeEstoque = 0;
                         _context.Pecas.Update(peca);
+                    }
+                    // Atualizar custo total do serviço
+                    var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+                    if (servico != null && peca != null)
+                    {
+                        // Remover o valor antigo e somar o novo
+                        servico.CustoTotal -= peca.Preco * antigo.QuantidadeUsada;
+                        servico.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
+                        if (servico.CustoTotal < 0) servico.CustoTotal = 0;
+                        _context.Servicos.Update(servico);
                     }
                 }
 
@@ -347,6 +400,15 @@ namespace MotasAlcoafinal.Controllers
             {
                 peca.QuantidadeEstoque += servicoPeca.QuantidadeUsada;
                 _context.Pecas.Update(peca);
+            }
+
+            // Atualizar custo total do serviço
+            var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servico != null && peca != null)
+            {
+                servico.CustoTotal -= peca.Preco * servicoPeca.QuantidadeUsada;
+                if (servico.CustoTotal < 0) servico.CustoTotal = 0;
+                _context.Servicos.Update(servico);
             }
 
             _context.ServicoPecas.Remove(servicoPeca);
@@ -401,6 +463,50 @@ namespace MotasAlcoafinal.Controllers
         private bool ServicoExists(int id)
         {
             return _context.Servicos.Any(e => e.Id == id);
+        }
+
+        /// <summary>
+        /// Exibe o formulário de confirmação para remover um serviço
+        /// </summary>
+        [Authorize(Roles = "Mecanico,Root")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var servico = await _context.Servicos
+                .Include(s => s.ServicoPecas)
+                .Include(s => s.Motocicleta)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (servico == null)
+            {
+                return NotFound();
+            }
+            ViewBag.HasDependencies = servico.ServicoPecas.Any();
+            return View(servico);
+        }
+
+        /// <summary>
+        /// Processa a remoção de um serviço
+        /// </summary>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var servico = await _context.Servicos
+                .Include(s => s.ServicoPecas)
+                .FirstOrDefaultAsync(s => s.Id == id);
+            if (servico == null)
+            {
+                return NotFound();
+            }
+            if (servico.ServicoPecas.Any())
+            {
+                TempData["Error"] = "Não é possível eliminar um serviço com peças associadas.";
+                return RedirectToAction("Details", new { id });
+            }
+            _context.Servicos.Remove(servico);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Serviço eliminado com sucesso.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

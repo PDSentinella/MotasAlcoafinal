@@ -142,6 +142,51 @@ namespace MotasAlcoafinal.Controllers
         }
 
         /// <summary>
+        /// Exibe o formulário de confirmação para remover uma peça
+        /// </summary>
+        [Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var peca = await _context.Pecas
+                .Include(p => p.ServicoPecas)
+                .Include(p => p.EncomendaPecas)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (peca == null)
+            {
+                return NotFound();
+            }
+            ViewBag.HasDependencies = (peca.ServicoPecas.Any() || peca.EncomendaPecas.Any());
+            return View(peca);
+        }
+
+        /// <summary>
+        /// Processa a remoção de uma peça
+        /// </summary>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var peca = await _context.Pecas
+                .Include(p => p.ServicoPecas)
+                .Include(p => p.EncomendaPecas)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (peca == null)
+            {
+                return NotFound();
+            }
+            if (peca.ServicoPecas.Any() || peca.EncomendaPecas.Any())
+            {
+                TempData["Error"] = "Não é possível eliminar uma peça com dependências (serviços ou encomendas associadas).";
+                return RedirectToAction("Details", new { id });
+            }
+            _context.Pecas.Remove(peca);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Peça eliminada com sucesso.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
         /// Verifica se uma peça existe
         /// </summary>
         /// <param name="id">ID da peça</param>

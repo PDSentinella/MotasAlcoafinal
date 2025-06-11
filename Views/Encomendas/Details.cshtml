@@ -3,49 +3,57 @@
     ViewData["Title"] = "Detalhes da Encomenda";
 }
 
-<h2>Detalhes da Encomenda</h2>
+<div class="container mt-4">
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="fw-bold"><i class="fas fa-info-circle"></i> Detalhes da Encomenda</h2>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Data do Pedido</dt>
+                <dd class="col-sm-9">@Model.DataPedido.ToString("dd/MM/yyyy")</dd>
 
-<div>
-    <h4>Encomenda</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Data do Pedido
-        </dt>
-        <dd class="col-sm-10">
-            @Model.DataPedido
-        </dd>
-        <dt class="col-sm-2">
-            Status
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Status
-        </dd>
-    </dl>
-</div>
+                <dt class="col-sm-3 fw-bold">Status</dt>
+                <dd class="col-sm-9">@Model.Status</dd>
+            </dl>
+        </div>
+    </div>
 
-<h3>Peças Associadas</h3>
-<table class="table table-striped table-responsive">
-    <thead>
-        <tr>
-            <th>Nome da Peça</th>
-            <th>Quantidade</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var encomendaPeca in Model.EncomendaPecas)
-        {
-            <tr>
-                <td>@encomendaPeca.Peca.Nome</td>
-                <td>@encomendaPeca.Quantidade</td>
-            </tr>
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="fw-bold"><i class="fas fa-cogs"></i> Peças Associadas</h4>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome da Peça</th>
+                        <th>Quantidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var encomendaPeca in Model.EncomendaPecas)
+                    {
+                        <tr>
+                            <td>@encomendaPeca.Peca.Nome</td>
+                            <td>@encomendaPeca.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        @if(User.IsInRole("Gestor") || User.IsInRole("Root")){
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="fas fa-edit"></i> Editar</a>
+            @if (Model.EncomendaPecas == null || !Model.EncomendaPecas.Any())
+            {
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja eliminar esta encomenda?');">
+                    <button type="submit" class="btn btn-danger ms-2"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                </form>
+            }
         }
-    </tbody>
-</table>
-
-<div>
-    @if(User.IsInRole("Gestor") || User.IsInRole("Root")){
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-    }
-    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Voltar</a>
+    </div>
 </div>

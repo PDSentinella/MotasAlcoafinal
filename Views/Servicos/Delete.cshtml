@@ -1,0 +1,39 @@
+@model motasAlcoafinal.Models.Servicos
+@{
+    ViewData["Title"] = "Eliminar Serviço";
+    bool hasDependencies = ViewBag.HasDependencies ?? false;
+}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-danger text-white">
+            <h2 class="fw-bold">Eliminar Serviço</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="fw-bold">Tem a certeza que deseja eliminar o serviço <span class="text-danger">@Model.Descricao</span>?</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Data:</dt>
+                <dd class="col-sm-9">@Model.Data.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-3">Motocicleta:</dt>
+                <dd class="col-sm-9">@Model.Motocicleta?.Modelo</dd>
+                <dt class="col-sm-3">Custo Total:</dt>
+                <dd class="col-sm-9">@Model.CustoTotal.ToString("C")</dd>
+            </dl>
+            @if (hasDependencies)
+            {
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Não é possível eliminar este serviço porque existem peças associadas.
+                </div>
+            }
+            else
+            {
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger shadow"><i class="fas fa-trash"></i> Eliminar</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2 shadow"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

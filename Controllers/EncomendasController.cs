@@ -248,6 +248,34 @@ namespace MotasAlcoafinal.Controllers
         }
 
         /// <summary>
+        /// Remove uma encomenda (apenas se não houver peças associadas)
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Gestor,Root")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var encomenda = await _context.Encomendas
+                .Include(e => e.EncomendaPecas)
+                .FirstOrDefaultAsync(e => e.Id == id);
+            if (encomenda == null)
+            {
+                return NotFound();
+            }
+            if (encomenda.EncomendaPecas != null && encomenda.EncomendaPecas.Any())
+            {
+                // Não permite deletar se houver peças associadas
+                TempData["Error"] = "Não é possível eliminar uma encomenda com peças associadas.";
+                return RedirectToAction("Details", new { id });
+            }
+            _context.Encomendas.Remove(encomenda);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Encomenda eliminada com sucesso.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
         /// Verifica se uma encomenda existe
         /// </summary>
         /// <param name="id">ID da encomenda</param>

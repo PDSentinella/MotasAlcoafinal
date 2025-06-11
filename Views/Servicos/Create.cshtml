@@ -24,7 +24,7 @@
 
                 <div class="mb-3">
                     <label asp-for="CustoTotal" class="form-label fw-bold">Custo do serviço (não inclui peças) </label>
-                    <input asp-for="CustoTotal" class="form-control" placeholder="Digite o custo do serviço..." />
+                    <input asp-for="CustoTotal" class="form-control" placeholder="Digite o custo do serviço..." id="custoServicoInput" />
                     <span asp-validation-for="CustoTotal" class="text-danger"></span>
                 </div>
 
@@ -34,6 +34,38 @@
                         <option value="">Selecione uma motocicleta...</option>
                     </select>
                     <span asp-validation-for="MotocicletaId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Peças e Quantidades</label>
+                    <div id="alertaStockZero" class="alert alert-warning d-none" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i> Atenção: A peça selecionada está com o stock a zero!
+                    </div>
+                    <div id="pecasContainer">
+                        <div class="row mb-2 align-items-end peca-row">
+                            <div class="col-7">
+                                <select name="pecasIds" class="form-select peca-select">
+                                    <option value="">Selecione uma peça...</option>
+                                    @foreach (var peca in ViewBag.Pecas as SelectList)
+                                    {
+                                        <option value="@peca.Value" data-preco="@((ViewBag.PecasData as Dictionary<int, decimal>)[int.Parse(peca.Value)])">@peca.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-3">
+                                <input type="number" name="quantidades" class="form-control quantidade-input" min="1" value="1" />
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-danger btn-remove-peca">-</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mt-2" id="addPecaBtn">Adicionar Peça</button>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Custo Total (serviço + peças)</label>
+                    <input type="text" class="form-control" id="custoTotalComPeças" readonly />
                 </div>
 
                 <div class="d-flex justify-content-between">
@@ -47,3 +79,77 @@
 
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+@section Scripts {
+<script>
+    // Dados de preço das peças
+    var pecasData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.PecasData));
+    var pecasStock = {};
+    @foreach (var peca in ViewBag.Pecas as SelectList)
+    {
+        <text>pecasStock[@peca.Value] = @(((Dictionary<int, motasAlcoafinal.Models.Pecas>)ViewBag.PecasObj)[int.Parse(peca.Value)].QuantidadeEstoque);</text>
+    }
+
+    function calcularCustoTotal() {
+        let custoServico = parseFloat(document.getElementById('custoServicoInput').value) || 0;
+        let totalPecas = 0;
+        document.querySelectorAll('.peca-row').forEach(function(row) {
+            let select = row.querySelector('.peca-select');
+            let quantidade = parseInt(row.querySelector('.quantidade-input').value) || 0;
+            let preco = 0;
+            if (select.value && pecasData[select.value]) {
+                preco = parseFloat(pecasData[select.value]);
+            }
+            totalPecas += preco * quantidade;
+        });
+        document.getElementById('custoTotalComPeças').value = (custoServico + totalPecas).toFixed(2);
+    }
+
+    function verificarStockZero() {
+        let alerta = document.getElementById('alertaStockZero');
+        let algumZero = false;
+        document.querySelectorAll('.peca-row').forEach(function(row) {
+            let select = row.querySelector('.peca-select');
+            if (select.value && pecasStock[select.value] === 0) {
+                algumZero = true;
+            }
+        });
+        if (algumZero) {
+            alerta.classList.remove('d-none');
+        } else {
+            alerta.classList.add('d-none');
+        }
+    }
+
+    document.getElementById('addPecaBtn').addEventListener('click', function() {
+        var container = document.getElementById('pecasContainer');
+        var row = container.querySelector('.peca-row');
+        var newRow = row.cloneNode(true);
+        newRow.querySelector('.peca-select').selectedIndex = 0;
+        newRow.querySelector('.quantidade-input').value = 1;
+        container.appendChild(newRow);
+        calcularCustoTotal();
+        verificarStockZero();
+    });
+
+    document.getElementById('pecasContainer').addEventListener('input', function(e) {
+        if (e.target.classList.contains('peca-select') || e.target.classList.contains('quantidade-input')) {
+            calcularCustoTotal();
+            verificarStockZero();
+        }
+    });
+    document.getElementById('pecasContainer').addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-remove-peca')) {
+            var row = e.target.closest('.peca-row');
+            if (document.querySelectorAll('.peca-row').length > 1) {
+                row.remove();
+                calcularCustoTotal();
+                verificarStockZero();
+            }
+        }
+    });
+    document.getElementById('custoServicoInput').addEventListener('input', calcularCustoTotal);
+    calcularCustoTotal();
+    verificarStockZero();
+</script>
+}

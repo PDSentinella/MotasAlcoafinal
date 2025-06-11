@@ -1,6 +1,21 @@
 ﻿@model motasAlcoafinal.Models.ServicoPecas
 @{
     ViewData["Title"] = "Adicionar Peça";
+    var pecasList = ViewBag.Pecas as SelectList;
+    int stock = 0;
+    if (pecasList != null && Model.PecaId != null)
+    {
+        int pecaIdInt = Model.PecaId.Value;
+        var pecasObj = ViewBag.PecasObj as Dictionary<int, motasAlcoafinal.Models.Pecas>;
+        if (pecasObj != null && pecasObj.ContainsKey(pecaIdInt))
+        {
+            stock = pecasObj[pecaIdInt].QuantidadeEstoque;
+        }
+    }
+}
+@if (stock == 0 && Model.PecaId != null && Model.PecaId != 0)
+{
+    <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Atenção: Esta peça está com o stock a zero!</div>
 }
 
 <h2>Adicionar Peça</h2>

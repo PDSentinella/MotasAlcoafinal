@@ -163,5 +163,49 @@ namespace MotasAlcoafinal.Controllers
 
             return View(motocicleta);
         }
+
+        /// <summary>
+        /// Exibe o formulário de confirmação para remover uma motocicleta
+        /// </summary>
+        [Authorize(Roles = "Mecanico,Root")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var motocicleta = await _context.Motocicletas
+                .Include(m => m.Servicos)
+                .Include(m => m.Cliente)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (motocicleta == null)
+            {
+                return NotFound();
+            }
+            ViewBag.HasDependencies = motocicleta.Servicos.Any();
+            return View(motocicleta);
+        }
+
+        /// <summary>
+        /// Processa a remoção de uma motocicleta
+        /// </summary>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var motocicleta = await _context.Motocicletas
+                .Include(m => m.Servicos)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (motocicleta == null)
+            {
+                return NotFound();
+            }
+            if (motocicleta.Servicos.Any())
+            {
+                TempData["Error"] = "Não é possível eliminar uma motocicleta com serviços associados.";
+                return RedirectToAction("Details", new { id });
+            }
+            _context.Motocicletas.Remove(motocicleta);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Motocicleta eliminada com sucesso.";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
