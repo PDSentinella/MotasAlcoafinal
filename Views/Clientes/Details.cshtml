@@ -51,9 +51,15 @@
             </table>
 
             <div class="d-flex justify-content-between mt-3">
-                 @if(User.IsInRole("Mecanico") || User.IsInRole("Root")){
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
-                 }
+                <div>
+                    @if(User.IsInRole("Mecanico") || User.IsInRole("Root")){
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-2">Editar</a>
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja remover este cliente?');">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger">Remover</button>
+                        </form>
+                    }
+                </div>
                 <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </div>

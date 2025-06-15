@@ -160,8 +160,8 @@ namespace MotasAlcoafinal.Controllers
             var callbackUrl = Url.Action("ResetPassword", "Account",
                 new { token, email = model.Email }, protocol: HttpContext.Request.Scheme);
 
-            var message = $"<p>Para redefinir sua senha, clique no link abaixo:</p>" +
-                          $"<p><a href='{callbackUrl}'>Redefinir senha</a></p>";
+            var message = $"<p>Para redefinir a sua senha, clique no link abaixo:</p>" +
+                          $"<p><a href='{callbackUrl}'>Redefinir a senha</a></p>";
 
             await _emailService.SendEmailAsync(model.Email, "Recuperação de Password", message);
 

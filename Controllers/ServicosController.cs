@@ -162,6 +162,7 @@ namespace MotasAlcoafinal.Controllers
         {
             var servico = await _context.Servicos
                 .Include(s => s.ServicoPecas)
+                .ThenInclude(sp => sp.Peca)
                 .FirstOrDefaultAsync(s => s.Id == id);
             if (servico == null)
             {
@@ -169,6 +170,8 @@ namespace MotasAlcoafinal.Controllers
             }
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+            ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servico);
         }
 
@@ -182,7 +185,7 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit(int id, [Bind("Descricao, Data, CustoTotal, MotocicletaId")] Servicos servico, List<int> pecasIds, List<int> quantidades)
+        public async Task<IActionResult> Edit(int id, [Bind("Descricao, Data, MotocicletaId")] Servicos servico, decimal CustoServico, List<int> pecasIds, List<int> quantidades)
         {
             if (id != servico.Id)
             {
@@ -193,6 +196,19 @@ namespace MotasAlcoafinal.Controllers
             {
                 try
                 {
+                    // Calcular o total das peças
+                    decimal totalPecas = 0;
+                    for (int i = 0; i < pecasIds.Count; i++)
+                    {
+                        var peca = await _context.Pecas.FindAsync(pecasIds[i]);
+                        if (peca != null)
+                        {
+                            totalPecas += peca.Preco * quantidades[i];
+                        }
+                    }
+                    servico.CustoTotal = CustoServico + totalPecas;
+
+                    servico.Id = id;
                     _context.Update(servico);
                     await _context.SaveChangesAsync();
 
@@ -246,6 +262,8 @@ namespace MotasAlcoafinal.Controllers
             }
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+            ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
+            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servico);
         }
 
@@ -278,23 +296,32 @@ namespace MotasAlcoafinal.Controllers
                     if (servicoPeca.QuantidadeUsada > peca.QuantidadeEstoque)
                     {
                         ModelState.AddModelError("", $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, solicitado: {servicoPeca.QuantidadeUsada}.");
-                        // Aqui pode-se sugerir encomenda automática
                         ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
                         return View(servicoPeca);
                     }
                     peca.QuantidadeEstoque -= servicoPeca.QuantidadeUsada;
                     if (peca.QuantidadeEstoque < 0)
-                        peca.QuantidadeEstoque = 0; // Nunca deixa negativo
+                        peca.QuantidadeEstoque = 0;
                     _context.Pecas.Update(peca);
                 }
 
-                var ser = new ServicoPecas
+                // Verifica se já existe a peça neste serviço
+                var existente = await _context.ServicoPecas.FirstOrDefaultAsync(sp => sp.ServicoId == servicoPeca.ServicoId && sp.PecaId == servicoPeca.PecaId);
+                if (existente != null)
                 {
-                    ServicoId = servicoPeca.ServicoId,
-                    PecaId = servicoPeca.PecaId,
-                    QuantidadeUsada = servicoPeca.QuantidadeUsada
-                };
-                _context.ServicoPecas.Add(ser);
+                    existente.QuantidadeUsada += servicoPeca.QuantidadeUsada;
+                    _context.ServicoPecas.Update(existente);
+                }
+                else
+                {
+                    var ser = new ServicoPecas
+                    {
+                        ServicoId = servicoPeca.ServicoId,
+                        PecaId = servicoPeca.PecaId,
+                        QuantidadeUsada = servicoPeca.QuantidadeUsada
+                    };
+                    _context.ServicoPecas.Add(ser);
+                }
 
                 // Atualizar o custo total do serviço
                 var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);

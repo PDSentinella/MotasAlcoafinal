@@ -33,13 +33,18 @@
             </dl>
         </div>
 
-        <div class="card-footer d-flex justify-content-between">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary shadow">
-                <i class="fas fa-edit"></i> Editar
-            </a>
-            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger shadow @(Model.ServicoPecas?.Any() == true || Model.EncomendaPecas?.Any() == true ? "disabled" : "")" title="@(Model.ServicoPecas?.Any() == true || Model.EncomendaPecas?.Any() == true ? "Não pode eliminar: dependências" : "Eliminar")">
-                <i class="fas fa-trash"></i> Eliminar
-            </a>
+        <div class="card-footer d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary shadow me-2">
+                    <i class="fas fa-edit"></i> Editar
+                </a>
+                <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja remover esta peça?');">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Remover
+                    </button>
+                </form>
+            </div>
             <a asp-action="Index" class="btn btn-secondary shadow">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>

@@ -15,22 +15,46 @@
         }
     </div>
 
-    <!-- Barra de Pesquisa -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <!-- Filtro por Estado -->
     <div class="card shadow-sm p-4 border-start border-4 border-danger mb-4 bg-light">
         <form asp-controller="Encomendas" asp-action="Index" method="get">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-6">
-                    <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar encomendas..." />
-                </div>
+            <div class="row justify-content-center">
                 <div class="col-md-4">
-                    <select name="statusFilter" class="form-select shadow-sm">
-                        <option value="">Todos</option>
-                        <option value="Pendente">Pendente</option>
-                        <option value="Entregue">Entregue</option>
+                    <select name="statusFilter" class="form-select shadow-sm" onchange="this.form.submit()">
+                        @if (string.IsNullOrEmpty(ViewBag.StatusFilter))
+                        {
+                            <option value="" selected>Todas</option>
+                        }
+                        else
+                        {
+                            <option value="">Todas</option>
+                        }
+                        @if ((string)ViewBag.StatusFilter == "Pendente")
+                        {
+                            <option value="Pendente" selected>Pendente</option>
+                        }
+                        else
+                        {
+                            <option value="Pendente">Pendente</option>
+                        }
+                        @if ((string)ViewBag.StatusFilter == "Entregue")
+                        {
+                            <option value="Entregue" selected>Entregue</option>
+                        }
+                        else
+                        {
+                            <option value="Entregue">Entregue</option>
+                        }
                     </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-danger w-100"><i class="fas fa-search me-1"></i> Pesquisar</button>
                 </div>
             </div>
         </form>
@@ -70,14 +94,35 @@
                                 }
                             </td>
                             <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a asp-action="Details" asp-route-id="@encomenda.Id" class="btn btn-outline-primary btn-sm rounded-pill">
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <a asp-action="Details" asp-route-id="@encomenda.Id" class="btn btn-outline-primary btn-sm rounded-pill px-2">
                                         <i class="fas fa-eye me-1"></i> Detalhes
                                     </a>
-                                    @if(User.IsInRole("Gestor") || User.IsInRole("Root")){
-                                    <a asp-action="Edit" asp-route-id="@encomenda.Id" class="btn btn-outline-danger btn-sm rounded-pill">
+                                    <a asp-action="Edit" asp-route-id="@encomenda.Id" class="btn btn-outline-danger btn-sm rounded-pill px-2">
                                         <i class="fas fa-edit me-1"></i> Editar
                                     </a>
+                                    @if (User.IsInRole("Gestor") || User.IsInRole("Root"))
+                                    {
+                                        @if (encomenda.Status == motasAlcoafinal.Models.Encomendas.Estados.Pendente)
+                                        {
+                                            <form asp-action="Delete" asp-route-id="@encomenda.Id" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2" onsubmit="return confirm('Tem a certeza que deseja eliminar esta encomenda?');">
+                                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-danger btn-sm rounded-pill px-2 invisible" disabled style="pointer-events: none;">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-danger btn-sm rounded-pill px-2 invisible" disabled style="pointer-events: none;">
+                                            <i class="fas fa-trash-alt"></i> Eliminar
+                                        </button>
                                     }
                                 </div>
                             </td>
@@ -110,3 +155,8 @@
 
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* Remove min-width dos botões de ação para ficarem compactos */
+    .table .btn { min-width: unset; font-size: 0.95rem; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .table .btn i { font-size: 1rem; }
+</style>

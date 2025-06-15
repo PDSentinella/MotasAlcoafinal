@@ -13,29 +13,37 @@
         }
     }
 }
-@if (stock == 0 && Model.PecaId != null && Model.PecaId != 0)
-{
-    <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Atenção: Esta peça está com o stock a zero!</div>
-}
-
-<h2>Editar Peça</h2>
-
-<form asp-action="EditPeca" method="post" class="form-horizontal">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="ServicoId" />
-    <input type="hidden" asp-for="PecaId" />
-    <div class="form-group">
-        <label asp-for="PecaId" class="control-label"></label>
-        <select asp-for="PecaId" class="form-control" asp-items="ViewBag.Pecas" disabled></select>
-        <span asp-validation-for="PecaId" class="text-danger"></span>
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h2 class="fw-bold mb-0"><i class="fas fa-edit me-2"></i> Editar Peça do Serviço</h2>
+        </div>
+        <div class="card-body">
+            @if (stock == 0 && Model.PecaId != null && Model.PecaId != 0)
+            {
+                <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Atenção: Esta peça está com o stock a zero!</div>
+            }
+            <form asp-action="EditPeca" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ServicoId" />
+                <input type="hidden" asp-for="PecaId" />
+                <div class="mb-3">
+                    <label asp-for="PecaId" class="form-label fw-bold">Peça</label>
+                    <select asp-for="PecaId" class="form-select" asp-items="ViewBag.Pecas" disabled></select>
+                    <span asp-validation-for="PecaId" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="QuantidadeUsada" class="form-label fw-bold">Quantidade Usada</label>
+                    <input asp-for="QuantidadeUsada" class="form-control" />
+                    <span asp-validation-for="QuantidadeUsada" class="text-danger"></span>
+                </div>
+                <div class="mb-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                    <a asp-action="Details" asp-route-id="@Model.ServicoId" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="QuantidadeUsada" class="control-label"></label>
-        <input asp-for="QuantidadeUsada" class="form-control" />
-        <span asp-validation-for="QuantidadeUsada" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Salvar" class="btn btn-primary" />
-        <a asp-action="Details" asp-route-id="@Model.ServicoId" class="btn btn-secondary">Cancelar</a>
-    </div>
-</form>
+</div>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

@@ -5,7 +5,6 @@
     var userRoles = ViewBag.UserRoles as Dictionary<string, string>;
 }
 
-
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -14,12 +13,13 @@
         <div class="card-body">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
-                    <tr>
+                    <tr class="align-middle text-center">
                         <th>Email</th>
                         <th>Role Atual</th>
                         <th>Atribuir Nova Role</th>
                         <th>Aprovado?</th>
                         <th>Aprovar/Desaprovar</th>
+                        <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,46 +30,29 @@
                         {
                             continue;
                         }
-
-                        <tr>
-                            <td>@user.Email</td>
+                        <tr class="align-middle text-center">
+                            <td class="fw-semibold">@user.Email</td>
                             <td>
                                 <span class="badge bg-info text-dark">
                                     @(userRoles != null && userRoles.ContainsKey(user.Id) ? userRoles[user.Id] : "Sem role")
                                 </span>
                             </td>
                             <td>
-                                <div class="d-flex justify-content-start align-items-center gap-3 flex-wrap">
-                                    <!-- Formul�rio para atribuir role -->
-                                    <form asp-action="AssignRole" method="post" class="d-flex align-items-center">
-                                        <input type="hidden" name="userId" value="@user.Id" />
-                                        <select name="role" class="form-select me-2" style="max-width: 200px;">
-                                            @foreach (var role in roles)
+                                <form asp-action="AssignRole" method="post" class="d-flex justify-content-center align-items-center gap-2 mb-0">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <select name="role" class="form-select form-select-sm" style="max-width: 160px;">
+                                        @foreach (var role in roles)
+                                        {
+                                            if (role.Name != "Root")
                                             {
-                                                if (role.Name != "Root")
-                                                {
-                                                    <option value="@role.Name" selected="@(role.Name == userRoles[user.Id] ? "selected" : null)">
-                                                        @role.Name
-                                                    </option>
-                                                }
+                                                <option value="@role.Name" selected="@(role.Name == userRoles[user.Id] ? "selected" : null)">@role.Name</option>
                                             }
-                                        </select>
-                                        <button type="submit" class="btn btn-success btn-sm" style="margin-left:20px;">
-                                            <i class="fas fa-check"></i> Atribuir
-                                        </button>
-                                    </form>
-
-                                    <!-- Formul�rio para apagar utilizador -->
-                                    @if (User.IsInRole("Root"))
-                                    {
-                                            <button type="button" class="btn btn-danger btn-sm"
-                                                    data-bs-toggle="modal" data-bs-target="#deleteModal"
-                                                    data-user-id="@user.Id" data-user-email="@user.Email">
-                                                <i class="fas fa-trash-alt"></i> Apagar
-                                            </button>
-
-                                    }
-                                </div>
+                                        }
+                                    </select>
+                                    <button type="submit" class="btn btn-success btn-sm px-3">
+                                        <i class="fas fa-check"></i> Atribuir
+                                    </button>
+                                </form>
                             </td>
                             <td>
                                 <span class="badge @(user.Aprovado ? "bg-success" : "bg-secondary")">
@@ -79,28 +62,36 @@
                             <td>
                                 <form asp-action="ApproveUser" method="post" class="d-inline">
                                     <input type="hidden" name="userId" value="@user.Id" />
-                                    <button type="submit" class="btn btn-sm @(user.Aprovado ? "btn-warning" : "btn-primary")">
+                                    <button type="submit" class="btn btn-sm @(user.Aprovado ? "btn-warning" : "btn-primary") px-3">
                                         @(user.Aprovado ? "Desaprovar" : "Aprovar")
                                     </button>
                                 </form>
                             </td>
+                            <td>
+                                @if (User.IsInRole("Root"))
+                                {
+                                    <button type="button" class="btn btn-danger btn-sm px-3"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            data-user-id="@user.Id" data-user-email="@user.Email">
+                                        <i class="fas fa-trash-alt"></i> Apagar
+                                    </button>
+                                }
+                            </td>
                         </tr>
                     }
-
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-
-<!-- Modal de confirma��o -->
+<!-- Modal de confirmação -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="deleteUserForm" asp-action="DeleteUser" method="post">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Elimina��o</h5>
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminação</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
@@ -116,7 +107,7 @@
     </div>
 </div>
 
-                    @section Scripts {
+@section Scripts {
     <script>
         const deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('show.bs.modal', function (event) {
@@ -132,3 +123,15 @@
         });
     </script>
 }
+
+<style>
+    .table td, .table th {
+        vertical-align: middle !important;
+    }
+    .form-select-sm {
+        min-width: 120px;
+    }
+    .btn-sm {
+        min-width: 90px;
+    }
+</style>

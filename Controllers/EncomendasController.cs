@@ -191,6 +191,14 @@ namespace MotasAlcoafinal.Controllers
 
                     var statusAnterior = encomendaAntiga.Status;
 
+                    // Impede voltar de Entregue para Pendente
+                    if (statusAnterior == Encomendas.Estados.Entregue && encomenda.Status == Encomendas.Estados.Pendente)
+                    {
+                        TempData["Error"] = "Não é permitido alterar o estado de 'Entregue' para 'Pendente'.";
+                        ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                        return View(encomendaAntiga);
+                    }
+
                     _context.Entry(encomendaAntiga).CurrentValues.SetValues(encomenda);
                     await _context.SaveChangesAsync();
 
@@ -263,12 +271,12 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
-            if (encomenda.EncomendaPecas != null && encomenda.EncomendaPecas.Any())
+            if (encomenda.Status == Encomendas.Estados.Entregue)
             {
-                // Não permite deletar se houver peças associadas
-                TempData["Error"] = "Não é possível eliminar uma encomenda com peças associadas.";
+                TempData["Error"] = "Não é possível eliminar uma encomenda que já foi entregue.";
                 return RedirectToAction("Details", new { id });
             }
+            // Permite eliminar mesmo com peças associadas se estiver pendente
             _context.Encomendas.Remove(encomenda);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Encomenda eliminada com sucesso.";
