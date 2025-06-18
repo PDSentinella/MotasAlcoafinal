@@ -26,7 +26,7 @@ namespace MotasAlcoafinal.Controllers.API
 
         // GET: api/Clientes
         /// <summary>
-        /// Devolve a lista com todas as categorias
+        /// Devolve a lista com todos os clientes
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -55,7 +55,7 @@ namespace MotasAlcoafinal.Controllers.API
 
 
         /// <summary>
-        /// GET: Devolver um cliente, quando a solicitação é feita através de HTTP GET
+        /// Devolve um cliente específico pelo seu identificador
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -88,7 +88,7 @@ namespace MotasAlcoafinal.Controllers.API
 
 
         /// <summary>
-        /// Edição de um cliente
+        /// Edita um cliente existente
         /// </summary>
         /// <param name="id"> identificação do cliente a editar</param>
         /// <param name="cliente">Novos dados do cliente</param>
@@ -126,7 +126,7 @@ namespace MotasAlcoafinal.Controllers.API
         }
 
         /// <summary>
-        /// Adição de um cliente
+        /// Cria um novo cliente
         /// </summary>
         /// <param name="cliente">Dados do cliente a adicionar</param>
         /// <returns></returns>
@@ -159,7 +159,7 @@ namespace MotasAlcoafinal.Controllers.API
 
         // DELETE: api/Clientes/5
         /// <summary>
-        /// Apagar um cliente
+        /// Apaga um cliente
         /// </summary>
         /// <param name="id">Identificador do cliente a apagar</param>
         /// <returns></returns>

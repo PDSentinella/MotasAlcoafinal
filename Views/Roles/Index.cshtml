@@ -1,6 +1,6 @@
 @model IEnumerable<ApplicationUser>
 @{
-    ViewBag.Title = "Atribuir Roles";
+    ViewBag.Title = "Gestão de utilizadores";
     var roles = ViewBag.Roles as List<Microsoft.AspNetCore.Identity.IdentityRole>;
     var userRoles = ViewBag.UserRoles as Dictionary<string, string>;
 }
@@ -8,7 +8,7 @@
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Atribuir Roles aos Utilizadores</h3>
+            <h3 class="mb-0">Gestão de utilizadores</h3>
         </div>
         <div class="card-body">
             <table class="table table-hover align-middle">

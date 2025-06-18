@@ -15,11 +15,11 @@ namespace MotasAlcoafinal.Controllers.API
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    public class MotocicletasAuthController : ControllerBase
+    public class MotocicletasController : ControllerBase
     {
         private readonly MotasAlcoaContext _context;
 
-        public MotocicletasAuthController(MotasAlcoaContext context)
+        public MotocicletasController(MotasAlcoaContext context)
         {
             _context = context;
         }

@@ -185,85 +185,15 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit(int id, [Bind("Descricao, Data, MotocicletaId")] Servicos servico, decimal CustoServico, List<int> pecasIds, List<int> quantidades)
+        public async Task<IActionResult> Edit([Bind("Id,Descricao,Data,CustoTotal,MotocicletaId")] Servicos servico)
         {
-            if (id != servico.Id)
-            {
-                return BadRequest();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    // Calcular o total das peças
-                    decimal totalPecas = 0;
-                    for (int i = 0; i < pecasIds.Count; i++)
-                    {
-                        var peca = await _context.Pecas.FindAsync(pecasIds[i]);
-                        if (peca != null)
-                        {
-                            totalPecas += peca.Preco * quantidades[i];
-                        }
-                    }
-                    servico.CustoTotal = CustoServico + totalPecas;
-
-                    servico.Id = id;
-                    _context.Update(servico);
-                    await _context.SaveChangesAsync();
-
-                    var existingServicoPecas = _context.ServicoPecas.Where(sp => sp.ServicoId == id).ToList();
-                    // Repor estoque das peças removidas
-                    foreach (var sp in existingServicoPecas)
-                    {
-                        var peca = await _context.Pecas.FindAsync(sp.PecaId);
-                        if (peca != null)
-                        {
-                            peca.QuantidadeEstoque += sp.QuantidadeUsada;
-                            _context.Pecas.Update(peca);
-                        }
-                    }
-                    _context.ServicoPecas.RemoveRange(existingServicoPecas);
-                    await _context.SaveChangesAsync();
-
-                    for (int i = 0; i < pecasIds.Count; i++)
-                    {
-                        var servicoPeca = new ServicoPecas
-                        {
-                            ServicoId = servico.Id,
-                            PecaId = pecasIds[i],
-                            QuantidadeUsada = quantidades[i]
-                        };
-                        _context.ServicoPecas.Add(servicoPeca);
-
-                        // Descontar do estoque
-                        var peca = await _context.Pecas.FindAsync(pecasIds[i]);
-                        if (peca != null)
-                        {
-                            peca.QuantidadeEstoque -= quantidades[i];
-                            if (peca.QuantidadeEstoque < 0) peca.QuantidadeEstoque = 0;
-                            _context.Pecas.Update(peca);
-                        }
-                    }
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ServicoExists(servico.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Update(servico);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
-            ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
-            ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
-            ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servico);
         }
 

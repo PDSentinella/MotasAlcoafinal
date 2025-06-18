@@ -36,7 +36,7 @@ builder.Services.AddTransient<EmailService>();
 // Configura√ß√£o de cookies 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Redireciona para login se n√£o autenticado
+    options.LoginPath = "/Account/Login"; // Redireciona para login se n„o autenticado
 });
 
 // Eliminar a prote√ß√£o de 'ciclos' qd se faz uma pesquisa que envolva um relacionamento 1-N em Linq
@@ -86,17 +86,43 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Minha API de gest„o de uma oficina de motos",
+        Title = "API para fazer a gest„o de uma oficina de motos",
         Version = "v1",
         Description = "API para gest„o de clientes, encomendas, serviÁos, peÁas e motocicletas"
     });
 
-    // Caminho para o XML gerado
-    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    //c.IncludeXmlComments(xmlPath);
+    // XML
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
 
+    // JWT Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Insira o token JWT desta forma: Bearer {seu_token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
+
 
 // Adiciona o Swagger
 // builder.Services.AddEndpointsApiExplorer();   // necess√°ria apenas para APIs m√≠nimas. 
@@ -110,10 +136,10 @@ builder.Services.AddSwaggerGen(c => {
 //        Description = "API para gest√£o de clientes, encomendas, servi√ßos, pe√ßas e motocicletas"
 //    });
 
-    // Caminho para o XML gerado
+// Caminho para o XML gerado
 //    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 //    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    
+
 //    c.IncludeXmlComments(xmlPath);
 
 //});
@@ -167,7 +193,7 @@ using (var scope = app.Services.CreateScope())
     await SeedData.InitializeAsync(scope.ServiceProvider);
 }
 
-//criar uma ponte enrre o nosso servi√ßo signal R (o ServicosHub)
+//criar uma ponte entre o nosso serviÁo signal R (o ServicosHub)
 //e o javascript do browser
 //app.MapHub<ServicosHub>("/servicoshub");
 
