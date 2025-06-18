@@ -6,16 +6,20 @@ using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MotasAlcoafinal.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MotasAlcoafinal.Controllers
 {
     public class EncomendasController : Controller
     {
         private readonly MotasAlcoaContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public EncomendasController(MotasAlcoaContext context)
+        public EncomendasController(MotasAlcoaContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -138,6 +142,7 @@ namespace MotasAlcoafinal.Controllers
                     _context.EncomendaPecas.Add(encomendaPeca);
                 }
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarEncomendas");   
 
                 return RedirectToAction(nameof(Index));
             }
@@ -201,6 +206,7 @@ namespace MotasAlcoafinal.Controllers
 
                     _context.Entry(encomendaAntiga).CurrentValues.SetValues(encomenda);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("AtualizarEncomendas"); 
 
                     // Se mudou de Pendente para Entregue, atualizar estoque
                     if (statusAnterior == Encomendas.Estados.Pendente && encomenda.Status == Encomendas.Estados.Entregue)
@@ -279,6 +285,7 @@ namespace MotasAlcoafinal.Controllers
             // Permite eliminar mesmo com peças associadas se estiver pendente
             _context.Encomendas.Remove(encomenda);
             await _context.SaveChangesAsync();
+             await _hubContext.Clients.All.SendAsync("AtualizarEncomendas"); 
             TempData["Success"] = "Encomenda eliminada com sucesso.";
             return RedirectToAction(nameof(Index));
         }

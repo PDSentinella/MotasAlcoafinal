@@ -123,6 +123,7 @@ namespace MotasAlcoafinal.Controllers
                 servico.CustoTotal += totalPecas;
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarServicos");
 
                 for (int i = 0; i < pecasIds.Count; i++)
                 {

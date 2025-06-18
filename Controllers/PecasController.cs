@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
+using MotasAlcoafinal.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MotasAlcoafinal.Controllers
 {
@@ -10,10 +12,12 @@ namespace MotasAlcoafinal.Controllers
     public class PecasController : Controller
     {
         private readonly MotasAlcoaContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public PecasController(MotasAlcoaContext context)
+        public PecasController(MotasAlcoaContext context,IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -83,6 +87,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 _context.Add(peca);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarPecas");
                 return RedirectToAction(nameof(Index));
             }
             return View(peca);
@@ -124,6 +129,7 @@ namespace MotasAlcoafinal.Controllers
                 {
                     _context.Update(peca);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("AtualizarPecas");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -182,6 +188,7 @@ namespace MotasAlcoafinal.Controllers
             }
             _context.Pecas.Remove(peca);
             await _context.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("AtualizarPecas");
             TempData["Success"] = "Peça eliminada com sucesso.";
             return RedirectToAction(nameof(Index));
         }

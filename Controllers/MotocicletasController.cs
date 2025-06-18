@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using MotasAlcoafinal.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using MotasAlcoafinal.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MotasAlcoafinal.Controllers
 {
@@ -14,10 +16,12 @@ namespace MotasAlcoafinal.Controllers
     public class MotocicletasController : Controller
     {
         private readonly MotasAlcoaContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public MotocicletasController(MotasAlcoaContext context)
+        public MotocicletasController(MotasAlcoaContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -105,6 +109,7 @@ namespace MotasAlcoafinal.Controllers
                 {
                     _context.Update(motocicleta);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("AtualizarMotocicletas");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -158,6 +163,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 _context.Add(motocicleta);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarMotocicletas");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -204,6 +210,7 @@ namespace MotasAlcoafinal.Controllers
             }
             _context.Motocicletas.Remove(motocicleta);
             await _context.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("AtualizarMotocicletas");
             TempData["Success"] = "Motocicleta eliminada com sucesso.";
             return RedirectToAction(nameof(Index));
         }
