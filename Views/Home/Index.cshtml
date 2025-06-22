@@ -57,7 +57,63 @@
     </div>
 </header>
 
-@if (User.IsInRole("Gestor") || User.IsInRole("Root"))
+@if (User.IsInRole("Root"))
+{
+    <div class="container mb-5">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 d-flex justify-content-center mb-4">
+                <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Index", "Roles")'">
+                    <i class="bi bi-people display-4"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Gestão de Utilizadores</h5>
+                        <p class="card-text">Gerir contas e permissões dos utilizadores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 d-flex justify-content-center mb-4">
+                <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Index", "Servicos")'">
+                    <i class="bi bi-card-list display-4"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Lista de Serviços</h5>
+                        <p class="card-text">Consultar todos os serviços agendados.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex justify-content-center mb-4" onclick="window.location.href='@Url.Action("Index", "Pecas")'">
+                <div class="card text-white bg-danger card-custom text-center p-3 w-100">
+                    <i class="bi bi-box-seam display-4"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Estoque de Peças</h5>
+                        <p class="card-text">Ver peças e quantidades disponíveis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-4 d-flex justify-content-center mb-4">
+                <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Create", "Pecas")'">
+                    <i class="bi bi-plus-circle display-4"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Adicionar Peças</h5>
+                        <p class="card-text">Inserir novas peças e quantidades ao estoque.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex justify-content-center mb-4">
+                <div class="card text-white bg-danger card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Index","Encomendas")'">
+                    <i class="bi bi-truck display-4"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Encomendas</h5>
+                        <p class="card-text">Gerir encomendas pendentes e novas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (User.IsInRole("Gestor"))
 {
     <div class="container mb-5">
         <div class="row justify-content-center mb-4">
@@ -80,7 +136,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row justify-content-center">
             <div class="col-md-4 d-flex justify-content-center mb-4">
                 <div class="card text-white bg-blue card-custom text-center p-3 w-100" onclick="window.location.href='@Url.Action("Create", "Pecas")'">
@@ -104,7 +159,7 @@
     </div>
 }
 
-else if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
+@if (User.IsInRole("Mecanico") || User.IsInRole("Root"))
 {
     <div class="container mb-5">
         <div class="row justify-content-center mb-4">

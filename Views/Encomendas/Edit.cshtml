@@ -22,8 +22,17 @@
 
                 <div class="mb-3">
                     <label asp-for="DataPedido" class="form-label fw-bold">Data do Pedido</label>
-                    <input asp-for="DataPedido" class="form-control" />
-                    <span asp-validation-for="DataPedido" class="text-danger"></span>
+                    @if (Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Entregue || Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Cancelada)
+                    {
+                        <input asp-for="DataPedido" class="form-control" disabled />
+                        <input type="hidden" asp-for="DataPedido" />
+                        <div class="form-text text-muted">A data não pode ser alterada neste estado.</div>
+                    }
+                    else
+                    {
+                        <input asp-for="DataPedido" class="form-control" />
+                        <span asp-validation-for="DataPedido" class="text-danger"></span>
+                    }
                 </div>
                 <div class="mb-3">
                     <label asp-for="Status" class="form-label fw-bold">Status</label>
@@ -33,11 +42,18 @@
                         <input type="hidden" asp-for="Status" />
                         <div class="form-text text-muted">O estado 'Entregue' não pode ser alterado.</div>
                     }
+                    else if (Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Cancelada)
+                    {
+                        <input class="form-control" value="Cancelada" disabled />
+                        <input type="hidden" asp-for="Status" />
+                        <div class="form-text text-muted">O estado 'Cancelada' não pode ser alterado.</div>
+                    }
                     else
                     {
                         <select asp-for="Status" class="form-select">
                             <option value="Pendente">Pendente</option>
                             <option value="Entregue">Entregue</option>
+                            <option value="Cancelada">Cancelada</option>
                         </select>
                     }
                     <span asp-validation-for="Status" class="text-danger"></span>

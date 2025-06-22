@@ -127,6 +127,7 @@ namespace MotasAlcoafinal.Controllers
 
             if (ModelState.IsValid)
             {
+                encomenda.Status = Encomendas.Estados.Pendente; // Sempre Pendente ao criar
                 // Removida a validação de estoque suficiente para permitir encomendar peças mesmo com estoque 0 ou negativo
                 _context.Add(encomenda);
                 await _context.SaveChangesAsync();
@@ -196,12 +197,25 @@ namespace MotasAlcoafinal.Controllers
 
                     var statusAnterior = encomendaAntiga.Status;
 
-                    // Impede voltar de Entregue para Pendente
-                    if (statusAnterior == Encomendas.Estados.Entregue && encomenda.Status == Encomendas.Estados.Pendente)
+                    // Impede voltar de Entregue para outro estado
+                    if (statusAnterior == Encomendas.Estados.Entregue && encomenda.Status != statusAnterior)
                     {
-                        TempData["Error"] = "Não é permitido alterar o estado de 'Entregue' para 'Pendente'.";
+                        TempData["Error"] = "Não é permitido alterar o estado de 'Entregue' para outro estado.";
                         ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
                         return View(encomendaAntiga);
+                    }
+                    // Impede voltar de Cancelada para outro estado
+                    if (statusAnterior == Encomendas.Estados.Cancelada && encomenda.Status != statusAnterior)
+                    {
+                        TempData["Error"] = "Não é permitido alterar o estado de 'Cancelada' para outro estado.";
+                        ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                        return View(encomendaAntiga);
+                    }
+
+                    // Impede alteração da data se Entregue ou Cancelada
+                    if (statusAnterior == Encomendas.Estados.Entregue || statusAnterior == Encomendas.Estados.Cancelada)
+                    {
+                        encomenda.DataPedido = encomendaAntiga.DataPedido;
                     }
 
                     _context.Entry(encomendaAntiga).CurrentValues.SetValues(encomenda);
@@ -277,9 +291,9 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
-            if (encomenda.Status == Encomendas.Estados.Entregue)
+            if (encomenda.Status == Encomendas.Estados.Entregue || encomenda.Status == Encomendas.Estados.Cancelada)
             {
-                TempData["Error"] = "Não é possível eliminar uma encomenda que já foi entregue.";
+                TempData["Error"] = "Não é possível eliminar uma encomenda que já foi entregue ou cancelada.";
                 return RedirectToAction("Details", new { id });
             }
             // Permite eliminar mesmo com peças associadas se estiver pendente

@@ -38,6 +38,7 @@
                         <th>Custo Total</th>
                         <th>Motocicleta</th>
                         <th>Peças Usadas</th>
+                        <th>Estado</th>
                         <th class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -45,7 +46,7 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="6" class="text-muted py-4">Nenhum serviço encontrado.</td>
+                            <td colspan="7" class="text-muted py-4">Nenhum serviço encontrado.</td>
                         </tr>
                     }
                     else
@@ -75,22 +76,23 @@
                                         <span class="text-muted">Nenhuma peça</span>
                                     }
                                 </td>
+                                <td>@servico.Status</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
                                         <a asp-action="Details" asp-route-id="@servico.Id" class="btn btn-outline-primary btn-sm rounded-pill">
                                             <i class="fas fa-eye me-1"></i> Detalhes
                                         </a>
-                                        @if ((User.IsInRole("Root") || User.IsInRole("Mecanico")))
+                                        @if ((User.IsInRole("Root") || User.IsInRole("Mecanico")) && servico.Status != motasAlcoafinal.Models.Servicos.Estados.Concluido && servico.Status != motasAlcoafinal.Models.Servicos.Estados.Cancelado)
                                         {
-                                            <a asp-action="Edit" asp-route-id="@servico.Id" class="btn btn-outline-danger btn-sm rounded-pill">
+                                            <a asp-action="Edit" asp-route-id="@servico.Id" class="btn btn-outline-warning btn-sm rounded-pill">
                                                 <i class="fas fa-edit me-1"></i> Editar
                                             </a>
-                                            @if (!hasDependencies)
-                                            {
-                                                <a asp-action="Delete" asp-route-id="@servico.Id" class="btn btn-outline-warning btn-sm rounded-pill">
-                                                    <i class="fas fa-trash me-1"></i> Eliminar
-                                                </a>
-                                            }
+                                        }
+                                        @if (!hasDependencies)
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@servico.Id" class="btn btn-outline-warning btn-sm rounded-pill">
+                                                <i class="fas fa-trash me-1"></i> Eliminar
+                                            </a>
                                         }
                                     </div>
                                 </td>

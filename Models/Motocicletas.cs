@@ -52,8 +52,8 @@ namespace motasAlcoafinal.Models
         /// Placa de identificação do motociclo
         /// </summary>
         [Display(Name = "Placa")]
-        [StringLength(10)]
-        [RegularExpression(@"^[A-Za-z0-9]+$", ErrorMessage = "A {0} só pode conter letras e números.")]
+        [StringLength(8, MinimumLength = 8, ErrorMessage = "A {0} deve ter o formato XX-00-XX ou 00-XX-00, incluindo os hífens.")]
+        [RegularExpression(@"^([A-Za-z]{2}-\d{2}-[A-Za-z]{2}|\d{2}-[A-Za-z]{2}-\d{2}|\d{2}-\d{2}-[A-Za-z]{2}|[A-Za-z]{2}-\d{2}-\d{2}|[A-Za-z]{2}-\d{2}-[A-Za-z]{2})$", ErrorMessage = "A {0} deve estar no formato português (ex: 12-AB-34, ab-12-cd, 12-34-ab, aa-12-aa, HX-55-dj)")]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
         public string Placa { get; set; } = string.Empty;
 

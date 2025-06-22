@@ -121,6 +121,7 @@ namespace MotasAlcoafinal.Controllers
                     return View(servico);
                 }
                 servico.CustoTotal += totalPecas;
+                servico.Status = Servicos.Estados.Pendente; // Garante estado inicial
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarServicos");
@@ -134,14 +135,7 @@ namespace MotasAlcoafinal.Controllers
                         QuantidadeUsada = quantidades[i]
                     };
                     _context.ServicoPecas.Add(servicoPeca);
-
-                    var peca = await _context.Pecas.FindAsync(pecasIds[i]);
-                    if (peca != null)
-                    {
-                        peca.QuantidadeEstoque -= quantidades[i];
-                        if (peca.QuantidadeEstoque < 0) peca.QuantidadeEstoque = 0;
-                        _context.Pecas.Update(peca);
-                    }
+                    // Não subtrai estoque aqui!
                 }
                 await _context.SaveChangesAsync();
 
@@ -170,6 +164,11 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
+            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido editar um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id });
+            }
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
@@ -187,11 +186,55 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit([Bind("Id,Descricao,Data,CustoTotal,MotocicletaId")] Servicos servico)
+        public async Task<IActionResult> Edit([Bind("Id,Descricao,Data,CustoTotal,MotocicletaId,Status")] Servicos servico)
         {
             if (ModelState.IsValid)
             {
-                _context.Update(servico);
+                var servicoAntigo = await _context.Servicos
+                    .Include(s => s.ServicoPecas)
+                    .FirstOrDefaultAsync(s => s.Id == servico.Id);
+                if (servicoAntigo == null)
+                {
+                    return NotFound();
+                }
+                if (servicoAntigo.Status == Servicos.Estados.Concluido || servicoAntigo.Status == Servicos.Estados.Cancelado)
+                {
+                    TempData["Error"] = "Não é permitido editar um serviço Concluido ou Cancelado.";
+                    return RedirectToAction("Details", new { id = servico.Id });
+                }
+
+                // Impede voltar de Concluido ou Cancelado para Pendente
+                if ((servicoAntigo.Status == Servicos.Estados.Concluido || servicoAntigo.Status == Servicos.Estados.Cancelado) && servico.Status == Servicos.Estados.Pendente)
+                {
+                    TempData["Error"] = "Não é permitido alterar o estado de 'Concluido' ou 'Cancelado' para 'Pendente'.";
+                    ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+                    return View(servicoAntigo);
+                }
+
+                // Só subtrai peças do estoque se mudou de Pendente para Concluido
+                if (servicoAntigo.Status == Servicos.Estados.Pendente && servico.Status == Servicos.Estados.Concluido)
+                {
+                    foreach (var sp in servicoAntigo.ServicoPecas)
+                    {
+                        var peca = await _context.Pecas.FirstOrDefaultAsync(p => p.Id == sp.PecaId);
+                        if (peca != null)
+                        {
+                            if (sp.QuantidadeUsada > peca.QuantidadeEstoque)
+                            {
+                                TempData["Error"] = $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, necessário: {sp.QuantidadeUsada}.";
+                                ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+                                return View(servicoAntigo);
+                            }
+                            peca.QuantidadeEstoque -= sp.QuantidadeUsada;
+                            if (peca.QuantidadeEstoque < 0) peca.QuantidadeEstoque = 0;
+                            _context.Pecas.Update(peca);
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                // Atualiza o serviço
+                _context.Entry(servicoAntigo).CurrentValues.SetValues(servico);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarServicos");
                 return RedirectToAction(nameof(Index));
@@ -207,6 +250,14 @@ namespace MotasAlcoafinal.Controllers
         [Authorize(Roles = "Mecanico,Root")]
         public IActionResult AddPeca(int id)
         {
+            var servico = _context.Servicos.Find(id);
+            if (servico == null)
+                return NotFound();
+            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido adicionar peças a um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id });
+            }
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(new ServicoPecas { ServicoId = id });
@@ -221,6 +272,14 @@ namespace MotasAlcoafinal.Controllers
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> AddPeca(ServicoPecas servicoPeca)
         {
+            var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servico == null)
+                return NotFound();
+            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido adicionar peças a um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+            }
             if (ModelState.IsValid && servicoPeca.ServicoId != null)
             {
                 var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
@@ -257,11 +316,11 @@ namespace MotasAlcoafinal.Controllers
                 }
 
                 // Atualizar o custo total do serviço
-                var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
-                if (servico != null && peca != null)
+                var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+                if (servicoDb != null && peca != null)
                 {
-                    servico.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
-                    _context.Servicos.Update(servico);
+                    servicoDb.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
+                    _context.Servicos.Update(servicoDb);
                 }
 
                 await _context.SaveChangesAsync();
@@ -284,6 +343,14 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
+            var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servicoDb == null)
+                return NotFound();
+            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido editar peças de um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+            }
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome", servicoPeca.PecaId);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
             return View(servicoPeca);
@@ -298,6 +365,14 @@ namespace MotasAlcoafinal.Controllers
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> EditPeca(ServicoPecas servicoPeca)
         {
+            var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servicoDb == null)
+                return NotFound();
+            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido editar peças de um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+            }
             if (ModelState.IsValid && servicoPeca.PecaId != null)
             {
                 // Buscar o registro antigo
@@ -322,14 +397,14 @@ namespace MotasAlcoafinal.Controllers
                         _context.Pecas.Update(peca);
                     }
                     // Atualizar custo total do serviço
-                    var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
-                    if (servico != null && peca != null)
+                    var servicoDb2 = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+                    if (servicoDb2 != null && peca != null)
                     {
                         // Remover o valor antigo e somar o novo
-                        servico.CustoTotal -= peca.Preco * antigo.QuantidadeUsada;
-                        servico.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
-                        if (servico.CustoTotal < 0) servico.CustoTotal = 0;
-                        _context.Servicos.Update(servico);
+                        servicoDb2.CustoTotal -= peca.Preco * antigo.QuantidadeUsada;
+                        servicoDb2.CustoTotal += peca.Preco * servicoPeca.QuantidadeUsada;
+                        if (servicoDb2.CustoTotal < 0) servicoDb2.CustoTotal = 0;
+                        _context.Servicos.Update(servicoDb2);
                     }
                 }
 
@@ -353,7 +428,14 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
-
+            var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servicoDb == null)
+                return NotFound();
+            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            {
+                TempData["Error"] = "Não é permitido remover peças de um serviço Concluido ou Cancelado.";
+                return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
+            }
             // Repor o stock da peça
             var peca = await _context.Pecas.FindAsync(servicoPeca.PecaId);
             if (peca != null)
@@ -363,12 +445,12 @@ namespace MotasAlcoafinal.Controllers
             }
 
             // Atualizar custo total do serviço
-            var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
-            if (servico != null && peca != null)
+            var servicoDb2 = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
+            if (servicoDb2 != null && peca != null)
             {
-                servico.CustoTotal -= peca.Preco * servicoPeca.QuantidadeUsada;
-                if (servico.CustoTotal < 0) servico.CustoTotal = 0;
-                _context.Servicos.Update(servico);
+                servicoDb2.CustoTotal -= peca.Preco * servicoPeca.QuantidadeUsada;
+                if (servicoDb2.CustoTotal < 0) servicoDb2.CustoTotal = 0;
+                _context.Servicos.Update(servicoDb2);
             }
 
             _context.ServicoPecas.Remove(servicoPeca);

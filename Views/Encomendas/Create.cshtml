@@ -16,14 +16,7 @@
                     <span asp-validation-for="DataPedido" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Status" class="form-label">Status</label>
-                    <select asp-for="Status" class="form-select">
-                        <option value="Pendente">Pendente</option>
-                        <option value="Entregue">Entregue</option>
-                    </select>
-                    <span asp-validation-for="Status" class="text-danger"></span>
-                </div>
+                <!-- O estado é sempre Pendente por default, não mostrar campo Status -->
 
                 <div class="mb-3">
                     <label for="pecas" class="form-label">Peças</label>

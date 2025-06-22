@@ -6,8 +6,7 @@ namespace motasAlcoafinal.Models
 
     /// <summary>
     /// Representa um pedido de peças realizado pela oficina. 
-    /// Cada encomenda possui um identificador, uma data e um estado (Pendente ou Entregue).
-    
+    /// Cada encomenda possui um identificador, uma data e um estado (Pendente, Entregue ou Cancelada).
     /// </summary>
     public class Encomendas
     {
@@ -45,8 +44,8 @@ namespace motasAlcoafinal.Models
         public enum Estados
         {
             Pendente,
-            Entregue
-
+            Entregue,
+            Cancelada // Novo estado para encomendas canceladas
         }
 
         /// <summary>

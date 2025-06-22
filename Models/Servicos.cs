@@ -43,6 +43,23 @@ namespace motasAlcoafinal.Models
         /// </summary>
         public decimal CustoTotal { get; set; } = decimal.Zero;
 
+        /// <summary>
+        /// Estado do serviço. Representa o ciclo de vida do serviço
+        /// </summary>
+        [Display(Name = "Estado")]
+        [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
+        public Estados Status { get; set; } = Estados.Pendente;
+
+        /// <summary>
+        /// Enumeração que representa os estados possíveis de um serviço.
+        /// </summary>
+        public enum Estados
+        {
+            Pendente,      // Serviço criado, aguardando execução
+            Concluido,     // Serviço finalizado, peças subtraídas
+            Cancelado      // Serviço cancelado, não subtrai peças
+        }
+
         // Relacionamento: Um serviço pertence a uma motocicleta
         public Motocicletas? Motocicleta { get; set; }
 

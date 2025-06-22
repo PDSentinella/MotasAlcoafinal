@@ -161,6 +161,8 @@ namespace MotasAlcoafinal.Controllers
 
             if (ModelState.IsValid)
             {
+                // Normaliza a matrícula para maiúsculas
+                motocicleta.Placa = motocicleta.Placa.ToUpperInvariant();
                 _context.Add(motocicleta);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarMotocicletas");

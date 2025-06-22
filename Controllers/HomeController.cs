@@ -24,6 +24,15 @@ public class HomeController : Controller
     }
 
     /// <summary>
+    /// Exibe a página sobre, que tem a informação dos desenvolvedores e do projeto
+    /// </summary>
+    [AllowAnonymous]
+    public IActionResult Sobre()
+    {
+        return View();
+    }
+
+    /// <summary>
     /// Exibe a página de privacidade
     /// </summary>
     public IActionResult Privacy()

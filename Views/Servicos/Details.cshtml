@@ -1,6 +1,7 @@
 ﻿@model motasAlcoafinal.Models.Servicos
 @{
     ViewData["Title"] = "Detalhes do Serviço";
+    bool isEncerrado = Model.Status == motasAlcoafinal.Models.Servicos.Estados.Concluido || Model.Status == motasAlcoafinal.Models.Servicos.Estados.Cancelado;
 }
 
 <div class="container mt-4">
@@ -50,9 +51,9 @@
                             <th>Quantidade Usada</th>
                             <th>Quantidade em Estoque</th>
                             <th>Disponível</th>
-                             @if (User.IsInRole("Root") || User.IsInRole("Mecanico")){
+                            @if ((User.IsInRole("Root") || User.IsInRole("Mecanico")) && !isEncerrado){
                             <th>Ações</th>
-                             }
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -72,16 +73,16 @@
                                         <span class="badge bg-danger">Não</span>
                                     }
                                 </td>
+                                @if ((User.IsInRole("Root") || User.IsInRole("Mecanico")) && !isEncerrado){
                                 <td>
-                                 @if (User.IsInRole("Root") || User.IsInRole("Mecanico")){
                                     <a asp-action="EditPeca" asp-route-id="@servicoPeca.Id" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
                                     <a asp-action="DeletePeca" asp-route-id="@servicoPeca.Id" class="btn btn-danger btn-sm">
                                         <i class="fas fa-trash-alt"></i> Excluir
                                     </a>
-                                 }
                                 </td>
+                                }
                             </tr>
                         }
                     </tbody>
@@ -95,14 +96,14 @@
     </div>
 
     <div class="d-flex justify-content-between">
-     @if (User.IsInRole("Root") || User.IsInRole("Mecanico")){
+    @if ((User.IsInRole("Root") || User.IsInRole("Mecanico")) && !isEncerrado){
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary shadow">
             <i class="fas fa-edit"></i> Editar
         </a>
         <a asp-action="AddPeca" asp-route-id="@Model.Id" class="btn btn-success shadow">
             <i class="fas fa-plus-circle"></i> Adicionar Peça
         </a>
-     }
+    }
         <a asp-action="EncomendarTodos" asp-route-id="@Model.Id" class="btn btn-warning shadow">
             <i class="fas fa-shopping-cart"></i> Encomendar Todos
         </a>
