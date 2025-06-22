@@ -14,7 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ---------- ServiÃ§os ----------
 builder.Services.AddDbContext<MotasAlcoaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure() // ResiliÃªncia a falhas transitÃ³rias
+    ));
 
 // Identity (utilizador e roles)
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -36,7 +39,7 @@ builder.Services.AddTransient<EmailService>();
 // ConfiguraÃ§Ã£o de cookies 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Redireciona para login se não autenticado
+    options.LoginPath = "/Account/Login"; // Redireciona para login se nï¿½o autenticado
 });
 
 // Eliminar a proteÃ§Ã£o de 'ciclos' qd se faz uma pesquisa que envolva um relacionamento 1-N em Linq
@@ -80,15 +83,15 @@ builder.Services.AddAuthentication(options => { })
 builder.Services.AddScoped<TokenService>();
 
 // Adiciona o Swagger
-// builder.Services.AddEndpointsApiExplorer();   // necessária apenas para APIs mínimas. 
+// builder.Services.AddEndpointsApiExplorer();   // necessï¿½ria apenas para APIs mï¿½nimas. 
 //builder.Services.AddSwaggerGen();
 
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "API para fazer a gestão de uma oficina de motos",
+        Title = "API para fazer a gestï¿½o de uma oficina de motos",
         Version = "v1",
-        Description = "API para gestão de clientes, encomendas, serviços, peças e motocicletas"
+        Description = "API para gestï¿½o de clientes, encomendas, serviï¿½os, peï¿½as e motocicletas"
     });
 
     // XML
@@ -193,7 +196,7 @@ using (var scope = app.Services.CreateScope())
     await SeedData.InitializeAsync(scope.ServiceProvider);
 }
 
-//criar uma ponte entre o nosso serviço signal R (o ServicosHub)
+//criar uma ponte entre o nosso serviï¿½o signal R (o ServicosHub)
 //e o javascript do browser
 //app.MapHub<ServicosHub>("/servicoshub");
 

@@ -14,11 +14,20 @@ namespace MotasAlcoafinal.Services
 
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Inicializa uma nova instância do serviço de geração de tokens JWT.
+        /// </summary>
+        /// <param name="config">Configuração da aplicação, utilizada para obter as definições do JWT.</param>
         public TokenService(IConfiguration config)
         {
             _config = config;
         }
 
+        /// <summary>
+        /// Gera um token JWT para o utilizador autenticado.
+        /// </summary>
+        /// <param name="user">Utilizador para o qual o token será gerado.</param>
+        /// <returns>Token JWT como string.</returns>
         public string GenerateToken(ApplicationUser user)
         {
             var jwtSettings = _config.GetSection("Jwt");

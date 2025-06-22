@@ -24,7 +24,7 @@ namespace MotasAlcoafinal.Controllers.API
             _context = context;
         }
 
-        // GET: api/Clientes
+
         /// <summary>
         /// Devolve a lista com todos os clientes
         /// </summary>
@@ -157,7 +157,6 @@ namespace MotasAlcoafinal.Controllers.API
             return CreatedAtAction(nameof(GetCliente), new { id = cliente.Id }, clienteDTO);
         }
 
-        // DELETE: api/Clientes/5
         /// <summary>
         /// Apaga um cliente
         /// </summary>

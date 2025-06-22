@@ -4,7 +4,7 @@ using motasAlcoafinal.Models;
 
 namespace motasAlcoafinal.Models
 {
-    ///
+
     /// <summary>
     /// Representa a relação entre uma encomenda e as peças associadas.
     /// Cada instância desta classe indica a quantidade de uma peça específica 

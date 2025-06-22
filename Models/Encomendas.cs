@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace motasAlcoafinal.Models
 {
-    ///
+
     /// <summary>
     /// Representa um pedido de peças realizado pela oficina. 
     /// Cada encomenda possui um identificador, uma data e um estado (Pendente ou Entregue).
