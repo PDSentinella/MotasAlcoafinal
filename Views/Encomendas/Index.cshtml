@@ -164,3 +164,18 @@
     .table .btn { min-width: unset; font-size: 0.95rem; padding-top: 0.25rem; padding-bottom: 0.25rem; }
     .table .btn i { font-size: 1rem; }
 </style>
+
+
+<!--SIGNAL R-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+
+    connection.on("AtualizarEncomendas", function () {
+        location.reload();
+    });
+
+    connection.start();
+</script>

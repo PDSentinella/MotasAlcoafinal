@@ -5,16 +5,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
+using MotasAlcoafinal.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MotasAlcoafinal.Controllers
 {
     public class ServicosController : Controller
     {
         private readonly MotasAlcoaContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ServicosController(MotasAlcoaContext context)
+        public ServicosController(MotasAlcoaContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -104,8 +108,6 @@ namespace MotasAlcoafinal.Controllers
                         if (quantidades[i] > peca.QuantidadeEstoque)
                         {
                             ModelState.AddModelError("", $"Stock insuficiente para a peça '{peca.Nome}'. Stock disponível: {peca.QuantidadeEstoque}, solicitado: {quantidades[i]}.");
-                            // Aqui pode-se sugerir encomenda automática
-                            // return RedirectToAction("EncomendarPeca", new { pecaId = peca.Id, quantidade = quantidades[i] - peca.QuantidadeEstoque });
                         }
                         totalPecas += peca.Preco * quantidades[i];
                     }
@@ -115,12 +117,13 @@ namespace MotasAlcoafinal.Controllers
                     ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
                     ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
                     ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
-                    ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p); // garantir que PecasObj é passado
+                    ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
                     return View(servico);
                 }
                 servico.CustoTotal += totalPecas;
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarServicos");
 
                 for (int i = 0; i < pecasIds.Count; i++)
                 {
@@ -132,7 +135,6 @@ namespace MotasAlcoafinal.Controllers
                     };
                     _context.ServicoPecas.Add(servicoPeca);
 
-                    // Descontar do estoque
                     var peca = await _context.Pecas.FindAsync(pecasIds[i]);
                     if (peca != null)
                     {
@@ -143,9 +145,9 @@ namespace MotasAlcoafinal.Controllers
                 }
                 await _context.SaveChangesAsync();
 
+                await _hubContext.Clients.All.SendAsync("AtualizarServicos");
                 return RedirectToAction(nameof(Index));
             }
-            // Sempre preenche os ViewBags, mesmo se não houver erro
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
@@ -191,6 +193,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 _context.Update(servico);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarServicos");
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
@@ -463,6 +466,7 @@ namespace MotasAlcoafinal.Controllers
             _context.Servicos.Remove(servico);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Serviço eliminado com sucesso.";
+            await _hubContext.Clients.All.SendAsync("AtualizarServicos");
             return RedirectToAction(nameof(Index));
         }
     }

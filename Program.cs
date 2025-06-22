@@ -198,7 +198,7 @@ using (var scope = app.Services.CreateScope())
 
 //criar uma ponte entre o nosso servi�o signal R (o ServicosHub)
 //e o javascript do browser
-//app.MapHub<ServicosHub>("/servicoshub");
+app.MapHub<MotasAlcoafinal.Hubs.NotificationHub>("/notificationHub");
 
 
 // ---------- Start ----------

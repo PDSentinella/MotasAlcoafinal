@@ -5,6 +5,8 @@ using motasAlcoafinal.Models;
 using MotasAlcoafinal.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MotasAlcoafinal.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MotasAlcoafinal.Controllers
 {
@@ -12,10 +14,12 @@ namespace MotasAlcoafinal.Controllers
     public class ClientesController : Controller
     {
         private readonly MotasAlcoaContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ClientesController(MotasAlcoaContext context)
+        public ClientesController(MotasAlcoaContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -88,19 +92,19 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Nome, Telefone, Email, Endereco")] Clientes cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Telefone,Email,Endereco")] Clientes cliente)
         {
             if (id != cliente.Id)
             {
-                return BadRequest();
+                return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(cliente);
                     await _context.SaveChangesAsync();
+                    await _hubContext.Clients.All.SendAsync("AtualizarClientes");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -144,12 +148,13 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Create([Bind("Nome, Email, Telefone, Endereco")] Clientes cliente)
+        public async Task<IActionResult> Create([Bind("Nome,Telefone,Email,Endereco")] Clientes cliente)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(cliente);
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarClientes");
                 return RedirectToAction(nameof(Index));
             }
             return View(cliente);
@@ -159,20 +164,18 @@ namespace MotasAlcoafinal.Controllers
         /// Remove um cliente
         /// </summary>
         /// <param name="id">ID do cliente</param>
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null)
+            if (cliente != null)
             {
-                TempData["ErrorMessage"] = "Cliente não encontrado.";
-                return RedirectToAction(nameof(Index));
+                _context.Clientes.Remove(cliente);
+                await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarClientes");
             }
-            _context.Clientes.Remove(cliente);
-            await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Cliente removido com sucesso.";
             return RedirectToAction(nameof(Index));
         }
     }
