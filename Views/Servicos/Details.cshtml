@@ -1,7 +1,7 @@
 ﻿@model motasAlcoafinal.Models.Servicos
 @{
     ViewData["Title"] = "Detalhes do Serviço";
-    bool isEncerrado = Model.Status == motasAlcoafinal.Models.Servicos.Estados.Concluido || Model.Status == motasAlcoafinal.Models.Servicos.Estados.Cancelado;
+    bool isEncerrado = Model.Status == motasAlcoafinal.Models.Servicos.ServicoEstado.Concluido || Model.Status == motasAlcoafinal.Models.Servicos.ServicoEstado.Cancelado;
 }
 
 <div class="container mt-4">

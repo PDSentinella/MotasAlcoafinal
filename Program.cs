@@ -89,9 +89,9 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "API para fazer a gest�o de uma oficina de motos",
+        Title = "API para fazer a gestao de uma oficina de motos",
         Version = "v1",
-        Description = "API para gest�o de clientes, encomendas, servi�os, pe�as e motocicletas"
+        Description = "API para gestao de clientes, encomendas, servicos, pecas e motocicletas"
     });
 
     // XML
@@ -159,23 +159,23 @@ var app = builder.Build();
 
 
 // ---------- Middlewares ----------
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API MotasAlcoa v1");
-    c.RoutePrefix = "swagger"; // A interface Swagger estará em /swagger
-});
 
-if (!app.Environment.IsDevelopment())
+
+    //iniciar o 'middleware' do swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseHsts(); // Segurança HTTPS
 }
 
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 // Autenticação e Autorização

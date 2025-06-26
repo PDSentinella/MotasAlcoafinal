@@ -48,12 +48,12 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Estado")]
         [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
-        public Estados Status { get; set; } = Estados.Pendente;
+        public ServicoEstado Status { get; set; } = ServicoEstado.Pendente;
 
         /// <summary>
         /// Enumeração que representa os estados possíveis de um serviço.
         /// </summary>
-        public enum Estados
+        public enum ServicoEstado
         {
             Pendente,      // Serviço criado, aguardando execução
             Concluido,     // Serviço finalizado, peças subtraídas

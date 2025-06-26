@@ -34,14 +34,14 @@ namespace motasAlcoafinal.Models
         /// </summary>
         [Display(Name = "Estado")]
         [Required(ErrorMessage = "O {0} é de preenchimento obrigatório")]
-        public Estados Status { get; set; } = Estados.Pendente; // Default 'Pendente'
+        public EncomendaEstado Status { get; set; } = EncomendaEstado.Pendente; // Default 'Pendente'
 
 
         /// <summary>
         /// Enumeração que representa os estados possíveis de uma encomenda.
         /// Os estados são: Pendente e Entregue.
         /// </summary>
-        public enum Estados
+        public enum EncomendaEstado
         {
             Pendente,
             Entregue,

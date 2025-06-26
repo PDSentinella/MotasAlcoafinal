@@ -121,7 +121,7 @@ namespace MotasAlcoafinal.Controllers
                     return View(servico);
                 }
                 servico.CustoTotal += totalPecas;
-                servico.Status = Servicos.Estados.Pendente; // Garante estado inicial
+                servico.Status = Servicos.ServicoEstado.Pendente; // Garante estado inicial
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarServicos");
@@ -164,7 +164,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
-            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            if (servico.Status == Servicos.ServicoEstado.Concluido || servico.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido editar um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id });
@@ -197,14 +197,14 @@ namespace MotasAlcoafinal.Controllers
                 {
                     return NotFound();
                 }
-                if (servicoAntigo.Status == Servicos.Estados.Concluido || servicoAntigo.Status == Servicos.Estados.Cancelado)
+                if (servicoAntigo.Status == Servicos.ServicoEstado.Concluido || servicoAntigo.Status == Servicos.ServicoEstado.Cancelado)
                 {
                     TempData["Error"] = "Não é permitido editar um serviço Concluido ou Cancelado.";
                     return RedirectToAction("Details", new { id = servico.Id });
                 }
 
                 // Impede voltar de Concluido ou Cancelado para Pendente
-                if ((servicoAntigo.Status == Servicos.Estados.Concluido || servicoAntigo.Status == Servicos.Estados.Cancelado) && servico.Status == Servicos.Estados.Pendente)
+                if ((servicoAntigo.Status == Servicos.ServicoEstado.Concluido || servicoAntigo.Status == Servicos.ServicoEstado.Cancelado) && servico.Status == Servicos.ServicoEstado.Pendente)
                 {
                     TempData["Error"] = "Não é permitido alterar o estado de 'Concluido' ou 'Cancelado' para 'Pendente'.";
                     ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
@@ -212,7 +212,7 @@ namespace MotasAlcoafinal.Controllers
                 }
 
                 // Só subtrai peças do estoque se mudou de Pendente para Concluido
-                if (servicoAntigo.Status == Servicos.Estados.Pendente && servico.Status == Servicos.Estados.Concluido)
+                if (servicoAntigo.Status == Servicos.ServicoEstado.Pendente && servico.Status == Servicos.ServicoEstado.Concluido)
                 {
                     foreach (var sp in servicoAntigo.ServicoPecas)
                     {
@@ -253,7 +253,7 @@ namespace MotasAlcoafinal.Controllers
             var servico = _context.Servicos.Find(id);
             if (servico == null)
                 return NotFound();
-            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            if (servico.Status == Servicos.ServicoEstado.Concluido || servico.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido adicionar peças a um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id });
@@ -275,7 +275,7 @@ namespace MotasAlcoafinal.Controllers
             var servico = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
             if (servico == null)
                 return NotFound();
-            if (servico.Status == Servicos.Estados.Concluido || servico.Status == Servicos.Estados.Cancelado)
+            if (servico.Status == Servicos.ServicoEstado.Concluido || servico.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido adicionar peças a um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
@@ -346,7 +346,7 @@ namespace MotasAlcoafinal.Controllers
             var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
             if (servicoDb == null)
                 return NotFound();
-            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            if (servicoDb.Status == Servicos.ServicoEstado.Concluido || servicoDb.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido editar peças de um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
@@ -368,7 +368,7 @@ namespace MotasAlcoafinal.Controllers
             var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
             if (servicoDb == null)
                 return NotFound();
-            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            if (servicoDb.Status == Servicos.ServicoEstado.Concluido || servicoDb.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido editar peças de um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
@@ -431,7 +431,7 @@ namespace MotasAlcoafinal.Controllers
             var servicoDb = await _context.Servicos.FindAsync(servicoPeca.ServicoId);
             if (servicoDb == null)
                 return NotFound();
-            if (servicoDb.Status == Servicos.Estados.Concluido || servicoDb.Status == Servicos.Estados.Cancelado)
+            if (servicoDb.Status == Servicos.ServicoEstado.Concluido || servicoDb.Status == Servicos.ServicoEstado.Cancelado)
             {
                 TempData["Error"] = "Não é permitido remover peças de um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id = servicoPeca.ServicoId });
@@ -476,7 +476,7 @@ namespace MotasAlcoafinal.Controllers
             var encomenda = new Encomendas
             {
                 DataPedido = DateTime.Now,
-                Status = Encomendas.Estados.Pendente
+                Status = Encomendas.EncomendaEstado.Pendente
             };
 
             _context.Encomendas.Add(encomenda);
