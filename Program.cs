@@ -159,18 +159,17 @@ var app = builder.Build();
 
 
 // ---------- Middlewares ----------
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API MotasAlcoa v1");
+    c.RoutePrefix = "swagger"; // A interface Swagger estará em /swagger
+});
 
-
-    //iniciar o 'middleware' do swagger
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts(); // Segurança HTTPS
+    app.UseHsts();
 }
 
 
