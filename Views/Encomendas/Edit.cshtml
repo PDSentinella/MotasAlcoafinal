@@ -22,7 +22,7 @@
 
                 <div class="mb-3">
                     <label asp-for="DataPedido" class="form-label fw-bold">Data do Pedido</label>
-                    @if (Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Entregue || Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Cancelada)
+                    @if (Model.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Entregue || Model.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Cancelada)
                     {
                         <input asp-for="DataPedido" class="form-control" disabled />
                         <input type="hidden" asp-for="DataPedido" />
@@ -36,13 +36,13 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="Status" class="form-label fw-bold">Status</label>
-                    @if (Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Entregue)
+                    @if (Model.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Entregue)
                     {
                         <input class="form-control" value="Entregue" disabled />
                         <input type="hidden" asp-for="Status" />
                         <div class="form-text text-muted">O estado 'Entregue' não pode ser alterado.</div>
                     }
-                    else if (Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Cancelada)
+                    else if (Model.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Cancelada)
                     {
                         <input class="form-control" value="Cancelada" disabled />
                         <input type="hidden" asp-for="Status" />
@@ -62,7 +62,7 @@
                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Guardar</button>
                     @* Permite eliminar se estiver Pendente *@
-                    @if ((Model.Status == motasAlcoafinal.Models.Encomendas.Estados.Pendente) && (User.IsInRole("Gestor") || User.IsInRole("Root")))
+                    @if ((Model.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Pendente) && (User.IsInRole("Gestor") || User.IsInRole("Root")))
                     {
                         <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Tem a certeza que deseja eliminar esta encomenda?');">
                             <button type="submit" class="btn btn-danger ms-2"><i class="fas fa-trash-alt"></i> Eliminar</button>

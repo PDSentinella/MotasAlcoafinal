@@ -40,7 +40,7 @@
 
                 <div class="mb-3">
                     <label asp-for="Status" class="form-label fw-bold">Estado</label>
-                    @if (Model.Status == motasAlcoafinal.Models.Servicos.Estados.Concluido || Model.Status == motasAlcoafinal.Models.Servicos.Estados.Cancelado)
+                    @if (Model.Status == motasAlcoafinal.Models.Servicos.ServicoEstado.Concluido || Model.Status == motasAlcoafinal.Models.Servicos.ServicoEstado.Cancelado)
                     {
                         <input class="form-control" value="@Model.Status" disabled />
                         <input type="hidden" asp-for="Status" />

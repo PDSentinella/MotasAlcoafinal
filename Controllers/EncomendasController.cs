@@ -127,7 +127,7 @@ namespace MotasAlcoafinal.Controllers
 
             if (ModelState.IsValid)
             {
-                encomenda.Status = Encomendas.Estados.Pendente; // Sempre Pendente ao criar
+                encomenda.Status = Encomendas.EncomendaEstado.Pendente; // Sempre Pendente ao criar
                 // Removida a validação de estoque suficiente para permitir encomendar peças mesmo com estoque 0 ou negativo
                 _context.Add(encomenda);
                 await _context.SaveChangesAsync();
@@ -198,14 +198,14 @@ namespace MotasAlcoafinal.Controllers
                     var statusAnterior = encomendaAntiga.Status;
 
                     // Impede voltar de Entregue para outro estado
-                    if (statusAnterior == Encomendas.Estados.Entregue && encomenda.Status != statusAnterior)
+                    if (statusAnterior == Encomendas.EncomendaEstado.Entregue && encomenda.Status != statusAnterior)
                     {
                         TempData["Error"] = "Não é permitido alterar o estado de 'Entregue' para outro estado.";
                         ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
                         return View(encomendaAntiga);
                     }
                     // Impede voltar de Cancelada para outro estado
-                    if (statusAnterior == Encomendas.Estados.Cancelada && encomenda.Status != statusAnterior)
+                    if (statusAnterior == Encomendas.EncomendaEstado.Cancelada && encomenda.Status != statusAnterior)
                     {
                         TempData["Error"] = "Não é permitido alterar o estado de 'Cancelada' para outro estado.";
                         ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
@@ -213,7 +213,7 @@ namespace MotasAlcoafinal.Controllers
                     }
 
                     // Impede alteração da data se Entregue ou Cancelada
-                    if (statusAnterior == Encomendas.Estados.Entregue || statusAnterior == Encomendas.Estados.Cancelada)
+                    if (statusAnterior == Encomendas.EncomendaEstado.Entregue || statusAnterior == Encomendas.EncomendaEstado.Cancelada)
                     {
                         encomenda.DataPedido = encomendaAntiga.DataPedido;
                     }
@@ -223,7 +223,7 @@ namespace MotasAlcoafinal.Controllers
                     await _hubContext.Clients.All.SendAsync("AtualizarEncomendas"); 
 
                     // Se mudou de Pendente para Entregue, atualizar estoque
-                    if (statusAnterior == Encomendas.Estados.Pendente && encomenda.Status == Encomendas.Estados.Entregue)
+                    if (statusAnterior == Encomendas.EncomendaEstado.Pendente && encomenda.Status == Encomendas.EncomendaEstado.Entregue)
                     {
                         // Buscar as peças da encomenda antiga
                         var encomendaPecas = await _context.EncomendaPecas.Where(ep => ep.EncomendaId == id).ToListAsync();
@@ -291,7 +291,7 @@ namespace MotasAlcoafinal.Controllers
             {
                 return NotFound();
             }
-            if (encomenda.Status == Encomendas.Estados.Entregue || encomenda.Status == Encomendas.Estados.Cancelada)
+            if (encomenda.Status == Encomendas.EncomendaEstado.Entregue || encomenda.Status == Encomendas.EncomendaEstado.Cancelada)
             {
                 TempData["Error"] = "Não é possível eliminar uma encomenda que já foi entregue ou cancelada.";
                 return RedirectToAction("Details", new { id });

@@ -89,9 +89,9 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "API para fazer a gest�o de uma oficina de motos",
+        Title = "API para fazer a gestao de uma oficina de motos",
         Version = "v1",
-        Description = "API para gest�o de clientes, encomendas, servi�os, pe�as e motocicletas"
+        Description = "API para gestao de clientes, encomendas, servicos, pecas e motocicletas"
     });
 
     // XML
@@ -176,7 +176,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 // Autenticação e Autorização
