@@ -133,6 +133,10 @@ namespace MotasAlcoafinal.Controllers.API
         [Authorize(AuthenticationSchemes = "Bearer", Roles = "Mecanico,Root")]
         public async Task<ActionResult<Motocicletas>> PostMotocicleta(Motocicletas motocicleta)
         {
+            // Normaliza a matrícula para maiúsculas, se não for nula
+            if (!string.IsNullOrEmpty(motocicleta.Matricula))
+                motocicleta.Matricula = motocicleta.Matricula.ToUpperInvariant();
+
             _context.Motocicletas.Add(motocicleta);
             await _context.SaveChangesAsync();
 

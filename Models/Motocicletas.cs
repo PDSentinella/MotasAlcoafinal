@@ -49,13 +49,13 @@ namespace motasAlcoafinal.Models
         public int Ano { get; set; } = 0;
 
         /// <summary>
-        /// Placa de identificação do motociclo
+        /// Matricula do motociclo
         /// </summary>
-        [Display(Name = "Placa")]
+        [Display(Name = "Matricula")]
         [StringLength(8, MinimumLength = 8, ErrorMessage = "A {0} deve ter o formato XX-00-XX ou 00-XX-00, incluindo os hífens.")]
         [RegularExpression(@"^([A-Za-z]{2}-\d{2}-[A-Za-z]{2}|\d{2}-[A-Za-z]{2}-\d{2}|\d{2}-\d{2}-[A-Za-z]{2}|[A-Za-z]{2}-\d{2}-\d{2}|[A-Za-z]{2}-\d{2}-[A-Za-z]{2})$", ErrorMessage = "A {0} deve estar no formato português (ex: 12-AB-34, ab-12-cd, 12-34-ab, aa-12-aa, HX-55-dj)")]
         [Required(ErrorMessage = "A {0} é de preenchimento obrigatório")]
-        public string Placa { get; set; } = string.Empty;
+        public string Matricula { get; set; } = string.Empty;
 
         // Relacionamento: Uma motocicleta pertence a um cliente
         public Clientes? Cliente { get; set; }

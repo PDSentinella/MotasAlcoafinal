@@ -96,7 +96,7 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit(int id,[Bind("Id, ClienteId, Marca, Modelo, Ano, Placa")] Motocicletas motocicleta)
+        public async Task<IActionResult> Edit(int id,[Bind("Id, ClienteId, Marca, Modelo, Ano, Matricula")] Motocicletas motocicleta)
         {
             if (id != motocicleta.Id)
             {
@@ -155,14 +155,14 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, ClienteId")] Motocicletas motocicleta)
+        public async Task<IActionResult> Create([Bind("Marca, Modelo, Ano, Placa, Matricula, ClienteId")] Motocicletas motocicleta)
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", motocicleta.ClienteId);
 
             if (ModelState.IsValid)
             {
                 // Normaliza a matrícula para maiúsculas
-                motocicleta.Placa = motocicleta.Placa.ToUpperInvariant();
+                motocicleta.Matricula = motocicleta.Matricula.ToUpperInvariant();
                 _context.Add(motocicleta);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarMotocicletas");

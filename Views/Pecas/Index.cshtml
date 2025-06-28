@@ -52,7 +52,7 @@
                             <tr>
                                 <td>@peca.Nome</td>
                                 <td>@peca.Descricao</td>
-                                <td>@peca.Preco.ToString("C")</td>
+                                <td>@peca.Preco.ToString("C", new System.Globalization.CultureInfo("pt-PT"))</td>
                                 <td>@peca.QuantidadeEstoque</td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">

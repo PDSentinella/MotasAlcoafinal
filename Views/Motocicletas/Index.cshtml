@@ -33,7 +33,7 @@
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Ano</th>
-                        <th>Placa</th>
+                        <th>Matricula</th>
                         <th>Cliente</th>
                         <th class="text-center">Ações</th>
                     </tr>
@@ -54,7 +54,7 @@
                                 <td>@motocicleta.Marca</td>
                                 <td>@motocicleta.Modelo</td>
                                 <td>@motocicleta.Ano</td>
-                                <td>@motocicleta.Placa</td>
+                                <td>@motocicleta.Matricula</td>
                                 <td>@(motocicleta.Cliente?.Nome ?? "Sem cliente")</td>
                                 <td class="text-center">
                                     <a asp-action="Details" asp-route-id="@motocicleta.Id" class="btn btn-outline-primary btn-sm me-1 rounded-pill">
