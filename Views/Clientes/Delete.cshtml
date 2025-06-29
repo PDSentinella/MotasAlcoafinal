@@ -1,0 +1,39 @@
+@model motasAlcoafinal.Models.Clientes
+@{
+    ViewData["Title"] = "Eliminar Cliente";
+    bool hasDependencies = ViewBag.HasDependencies ?? false;
+}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-danger text-white">
+            <h2 class="fw-bold">Eliminar Cliente</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="fw-bold">Tem a certeza que deseja eliminar o cliente <span class="text-danger">@Model.Nome</span>?</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Telefone:</dt>
+                <dd class="col-sm-9">@Model.Telefone</dd>
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+                <dt class="col-sm-3">Endereço:</dt>
+                <dd class="col-sm-9">@Model.Endereco</dd>
+            </dl>
+            @if (hasDependencies)
+            {
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Não é possível eliminar este cliente porque existem motocicletas ou serviços associados.
+                </div>
+            }
+            else
+            {
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger shadow"><i class="fas fa-trash"></i> Eliminar</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2 shadow"><i class="fas fa-arrow-left"></i> Cancelar</a>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

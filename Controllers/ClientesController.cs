@@ -167,16 +167,18 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente != null)
-            {
-                _context.Clientes.Remove(cliente);
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("AtualizarClientes");
-            }
-            return RedirectToAction(nameof(Index));
+            var cliente = await _context.Clientes
+                .Include(c => c.Motocicletas)
+                //.Include(c => c.Servicos)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (cliente == null)
+                return NotFound();
+
+            bool hasDependencies = (cliente.Motocicletas.Any() || cliente.Servicos.Any());
+            ViewBag.HasDependencies = hasDependencies;
+            return View(cliente);
         }
     }
 }
