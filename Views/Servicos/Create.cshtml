@@ -55,8 +55,8 @@
                     </div>
                     <div id="pecasContainer">
                         <div class="row mb-2 align-items-end peca-row">
-                            <div class="col-7">
-                                <select name="pecasIds" class="form-select peca-select">
+                            <div class="col-6">
+                                <select name="pecasIds" class="form-select peca-select searchable-select">
                                     <option value="">Selecione uma peça...</option>
                                     @foreach (var peca in ViewBag.Pecas as SelectList)
                                     {
@@ -90,11 +90,17 @@
 </div>
 
 <!-- FontAwesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css ">
+
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2 @@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 @section Scripts {
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2 @@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
-    // Dados de preço das peças
+    // Dados de preço e stock das peças
     var pecasData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.PecasData));
     var pecasStock = {};
     @foreach (var peca in ViewBag.Pecas as SelectList)
@@ -133,23 +139,42 @@
         }
     }
 
-    document.getElementById('addPecaBtn').addEventListener('click', function() {
+    function inicializarSelect2(selectElement) {
+        $(selectElement).select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: "Selecione uma peça...",
+            allowClear: true
+        });
+    }
+
+    document.getElementById('addPecaBtn').addEventListener('click', function () {
         var container = document.getElementById('pecasContainer');
         var row = container.querySelector('.peca-row');
         var newRow = row.cloneNode(true);
+
+        // Limpar campos
         newRow.querySelector('.peca-select').selectedIndex = 0;
         newRow.querySelector('.quantidade-input').value = 1;
+
+        // Remover eventos antigos e re-inicializar Select2
+        newRow.querySelector('.peca-select').replaceWith(newRow.querySelector('.peca-select').cloneNode(true));
+
         container.appendChild(newRow);
+        const novoSelect = newRow.querySelector('.peca-select');
+        inicializarSelect2(novoSelect);
+
         calcularCustoTotal();
         verificarStockZero();
     });
 
-    document.getElementById('pecasContainer').addEventListener('input', function(e) {
-        if (e.target.classList.contains('peca-select') || e.target.classList.contains('quantidade-input')) {
+    document.getElementById('pecasContainer').addEventListener('change', function(e) {
+        if (e.target.classList.contains('peca-select')) {
             calcularCustoTotal();
             verificarStockZero();
         }
     });
+
     document.getElementById('pecasContainer').addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-remove-peca')) {
             var row = e.target.closest('.peca-row');
@@ -160,9 +185,8 @@
             }
         }
     });
+
     document.getElementById('custoServicoInput').addEventListener('input', calcularCustoTotal);
-    calcularCustoTotal();
-    verificarStockZero();
 
     // AJAX para buscar as motos do cliente
     document.getElementById('clienteSelect').addEventListener('change', function() {
@@ -182,5 +206,14 @@
             matriculaSelect.innerHTML = '<option value="">Selecione um cliente primeiro...</option>';
         }
     });
+
+    // Inicializar Select2 nas peças já existentes
+    document.querySelectorAll('.searchable-select').forEach(function(select) {
+        inicializarSelect2(select);
+    });
+
+    // Rodar funções iniciais
+    calcularCustoTotal();
+    verificarStockZero();
 </script>
 }

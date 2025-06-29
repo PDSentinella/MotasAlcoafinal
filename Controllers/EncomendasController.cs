@@ -93,42 +93,35 @@ namespace MotasAlcoafinal.Controllers
         /// </summary>
         /// <param name="encomenda">Dados da encomenda</param>
         /// <param name="pecasIds">IDs das peças</param>
-        /// <param name="quantidades">Quantidades das peças (string separada por vírgulas)</param>
+        /// <param name="quantidades">Quantidades das peças (array de inteiros)</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Gestor,Root")]
-        public async Task<IActionResult> Create([Bind("DataPedido, Status ")] Encomendas encomenda, List<int> pecasIds, string quantidades)
+        public async Task<IActionResult> Create([Bind("DataPedido, Status ")] Encomendas encomenda, List<int> pecasIds, List<int> quantidades)
         {
-            // Parsing das quantidades separadas por vírgula
-            List<int> quantidadesList = new List<int>();
-            if (!string.IsNullOrWhiteSpace(quantidades))
+            // Validar se as listas existem e têm o mesmo tamanho
+            if (pecasIds == null || quantidades == null || pecasIds.Count != quantidades.Count || pecasIds.Count == 0)
             {
-                var partes = quantidades.Split(',');
-                foreach (var parte in partes)
-                {
-                    if (int.TryParse(parte.Trim(), out int q) && q > 0)
-                    {
-                        quantidadesList.Add(q);
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "Por favor, insira apenas números inteiros positivos nas quantidades, separados por vírgula.");
-                        ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
-                        return View(encomenda);
-                    }
-                }
-            }
-            if (pecasIds == null || quantidadesList == null || pecasIds.Count != quantidadesList.Count || pecasIds.Count == 0)
-            {
-                ModelState.AddModelError("", "Selecione as peças e insira as quantidades correspondentes, separadas por vírgula.");
+                ModelState.AddModelError("", "Selecione as peças e insira as quantidades correspondentes.");
                 ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
                 return View(encomenda);
+            }
+
+            // Validar se todas as quantidades são positivas
+            for (int i = 0; i < quantidades.Count; i++)
+            {
+                if (quantidades[i] <= 0)
+                {
+                    ModelState.AddModelError("", "Por favor, insira apenas números inteiros positivos nas quantidades.");
+                    ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
+                    return View(encomenda);
+                }
             }
 
             if (ModelState.IsValid)
             {
                 encomenda.Status = Encomendas.EncomendaEstado.Pendente; // Sempre Pendente ao criar
-                // Removida a validação de estoque suficiente para permitir encomendar peças mesmo com estoque 0 ou negativo
+
                 _context.Add(encomenda);
                 await _context.SaveChangesAsync();
 
@@ -138,15 +131,16 @@ namespace MotasAlcoafinal.Controllers
                     {
                         EncomendaId = encomenda.Id,
                         PecaId = pecasIds[i],
-                        Quantidade = quantidadesList[i]
+                        Quantidade = quantidades[i]
                     };
                     _context.EncomendaPecas.Add(encomendaPeca);
                 }
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("AtualizarEncomendas");   
 
+                await _context.SaveChangesAsync();
+                await _hubContext.Clients.All.SendAsync("AtualizarEncomendas");
                 return RedirectToAction(nameof(Index));
             }
+
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             return View(encomenda);
         }
