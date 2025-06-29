@@ -15,7 +15,7 @@
                 <dt class="col-sm-3">Descrição:</dt>
                 <dd class="col-sm-9">@Model.Descricao</dd>
                 <dt class="col-sm-3">Preço:</dt>
-                <dd class="col-sm-9">@Model.Preco.ToString("C")</dd>
+                <dd class="col-sm-9">@Model.Preco.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-PT"))</dd>
                 <dt class="col-sm-3">Quantidade em Estoque:</dt>
                 <dd class="col-sm-9">@Model.QuantidadeEstoque</dd>
             </dl>
