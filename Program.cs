@@ -158,20 +158,14 @@ var app = builder.Build();
 
 
 
-// ---------- Middlewares ----------
-if (app.Environment.IsDevelopment())
-{
+
 
 
     //iniciar o 'middleware' do swagger
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts(); // Segurança HTTPS
-}
+
+
 
 
 app.UseHttpsRedirection();
