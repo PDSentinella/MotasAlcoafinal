@@ -62,6 +62,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var servico = await _context.Servicos
+                .Include(s => s.Cliente)
                 .Include(s => s.Motocicleta)
                 .Include(s => s.ServicoPecas)
                 .ThenInclude(sp => sp.Peca)
@@ -165,6 +166,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var servico = await _context.Servicos
+                .Include(s => s.Cliente)
                 .Include(s => s.ServicoPecas)
                 .ThenInclude(sp => sp.Peca)
                 .FirstOrDefaultAsync(s => s.Id == id);
