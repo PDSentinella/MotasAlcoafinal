@@ -179,7 +179,8 @@ namespace MotasAlcoafinal.Controllers
                 TempData["Error"] = "Não é permitido editar um serviço Concluido ou Cancelado.";
                 return RedirectToAction("Details", new { id });
             }
-            ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", servico.ClienteId);
+            ViewBag.Motocicletas = new SelectList(_context.Motocicletas.Where(m => m.ClienteId == servico.ClienteId), "Id", "Modelo", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);

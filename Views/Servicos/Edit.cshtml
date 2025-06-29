@@ -31,13 +31,16 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Cliente</label>
-                    <input class="form-control" value="@Model.Cliente?.Nome" readonly disabled />
+                    <label asp-for="ClienteId" class="form-label fw-bold">Cliente</label>
+                    <select asp-for="ClienteId" class="form-select" asp-items="ViewBag.Clientes" id="clienteSelect">
+                        <option value="">Selecione um cliente...</option>
+                    </select>
+                    <span asp-validation-for="ClienteId" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="MotocicletaId" class="form-label fw-bold">Motocicleta</label>
-                    <select asp-for="MotocicletaId" class="form-select" asp-items="ViewBag.Motocicletas">
+                    <select asp-for="MotocicletaId" class="form-select" asp-items="ViewBag.Motocicletas" id="motoSelect">
                         <option value="">Selecione uma motocicleta...</option>
                     </select>
                     <span asp-validation-for="MotocicletaId" class="text-danger"></span>
@@ -77,3 +80,22 @@
 
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+@section Scripts {
+    <script>
+        document.getElementById('clienteSelect').addEventListener('change', function () {
+            var clienteId = this.value;
+            fetch('/Servicos/GetMotocicletasByCliente/' + clienteId)
+                .then(response => response.json())
+                .then(data => {
+                    var motoSelect = document.getElementById('motoSelect');
+                    motoSelect.innerHTML = '<option value="">Selecione uma motocicleta...</option>';
+                    data.forEach(function (moto) {
+                        var option = document.createElement('option');
+                        option.value = moto.id;
+                        option.text = moto.modelo + ' (' + moto.matricula + ')';
+                        motoSelect.appendChild(option);
+                    });
+                });
+        });
+    </script>
+}
