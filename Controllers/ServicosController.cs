@@ -182,7 +182,8 @@ namespace MotasAlcoafinal.Controllers
                 return RedirectToAction("Details", new { id });
             }
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", servico.ClienteId);
-            ViewBag.Motocicletas = new SelectList(_context.Motocicletas.Where(m => m.ClienteId == servico.ClienteId), "Id", "Modelo", servico.MotocicletaId);
+            ViewBag.Motocicletas = new SelectList(_context.Motocicletas.Where(m => m.ClienteId == servico.ClienteId).Select(m => new { m.Id, Nome = m.Modelo + " (" + m.Matricula + ")" }),
+    "Id", "Nome", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
