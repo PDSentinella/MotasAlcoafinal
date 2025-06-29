@@ -56,5 +56,7 @@ namespace motasAlcoafinal.Models
         /// cliente
         /// </summary>
         public ICollection <Motocicletas> Motocicletas { get; set; } = [];
+        public ICollection<Servicos> Servicos { get; set; } = []; // Adicionado para corrigir o erro
+
     }
 }

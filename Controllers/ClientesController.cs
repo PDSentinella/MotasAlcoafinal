@@ -164,19 +164,48 @@ namespace MotasAlcoafinal.Controllers
         /// Remove um cliente
         /// </summary>
         /// <param name="id">ID do cliente</param>
+        [HttpGet, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Mecanico,Root")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cliente = await _context.Clientes
+                .Include(c => c.Motocicletas)
+                //.Include(c => c.Servicos)
+                .FirstOrDefaultAsync(c => c.Id == id);
+            if (cliente == null)
+                return NotFound();
+
+            return View(cliente);
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente != null)
+            var cliente = await _context.Clientes
+                .Include(c => c.Motocicletas)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cliente == null)
+                return NotFound();
+
+            // Verifica se o cliente possui motocicletas ou serviços associados
+            bool temMotocicletas = cliente.Motocicletas.Any();
+            bool temServicos = await _context.Servicos.AnyAsync(s => s.ClienteId == id);
+
+            if (temMotocicletas || temServicos)
             {
-                _context.Clientes.Remove(cliente);
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("AtualizarClientes");
+                ViewBag.HasDependencies = true;
+                return View("Delete", cliente);
             }
+
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("AtualizarClientes");
             return RedirectToAction(nameof(Index));
         }
+
     }
 }
