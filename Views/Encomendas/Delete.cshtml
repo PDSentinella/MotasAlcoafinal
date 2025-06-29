@@ -86,7 +86,7 @@
     }
     else
     {
-        <form asp-action="DeleteConfirmed" method="post" class="d-inline">
+        <form asp-action="Delete" method="post" class="d-inline">
             <input type="hidden" asp-for="Id" />
             <button type="submit" class="btn btn-danger" onclick="return confirm('Tem a certeza que pretende eliminar esta encomenda?')">
                 <i class="fas fa-trash"></i> Eliminar Encomenda
