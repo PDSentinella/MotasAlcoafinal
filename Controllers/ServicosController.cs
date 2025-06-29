@@ -40,6 +40,7 @@ namespace MotasAlcoafinal.Controllers
 
             var totalServicos = await servicos.CountAsync();
             var servicosList = await servicos
+                .Include(s => s.Cliente)
                 .Include(s => s.Motocicleta)
                 .Include(s => s.ServicoPecas)
                     .ThenInclude(sp => sp.Peca)
