@@ -120,8 +120,8 @@
                                     {
                                         @if (encomenda.Status == motasAlcoafinal.Models.Encomendas.EncomendaEstado.Pendente)
                                         {
-                                            <form asp-action="Delete" asp-route-id="@encomenda.Id" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2" onsubmit="return confirm('Tem a certeza que deseja eliminar esta encomenda?');">
+                                            <form asp-action="Delete" asp-route-id="@encomenda.Id" method="get" class="d-inline">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2">
                                                     <i class="fas fa-trash-alt"></i> Eliminar
                                                 </button>
                                             </form>

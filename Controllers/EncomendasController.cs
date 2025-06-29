@@ -270,30 +270,62 @@ namespace MotasAlcoafinal.Controllers
         }
 
         /// <summary>
-        /// Remove uma encomenda (apenas se não houver peças associadas)
+        /// Exibe a página de confirmação para eliminar uma encomenda
         /// </summary>
         /// <param name="id">ID da encomenda</param>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Gestor,Root")]
         public async Task<IActionResult> Delete(int id)
         {
             var encomenda = await _context.Encomendas
                 .Include(e => e.EncomendaPecas)
+                .ThenInclude(ep => ep.Peca)
                 .FirstOrDefaultAsync(e => e.Id == id);
+
             if (encomenda == null)
             {
                 return NotFound();
             }
-            if (encomenda.Status == Encomendas.EncomendaEstado.Entregue || encomenda.Status == Encomendas.EncomendaEstado.Cancelada)
+
+            return View(encomenda);
+        }
+
+        /// <summary>
+        /// Confirma a eliminação de uma encomenda
+        /// </summary>
+        /// <param name="id">ID da encomenda</param>
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Gestor,Root")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var encomenda = await _context.Encomendas
+                .Include(e => e.EncomendaPecas)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (encomenda == null)
+            {
+                return NotFound();
+            }
+
+            if (encomenda.Status == Encomendas.EncomendaEstado.Entregue ||
+                encomenda.Status == Encomendas.EncomendaEstado.Cancelada)
             {
                 TempData["Error"] = "Não é possível eliminar uma encomenda que já foi entregue ou cancelada.";
                 return RedirectToAction("Details", new { id });
             }
-            // Permite eliminar mesmo com peças associadas se estiver pendente
+
+            // Remove as peças da encomenda primeiro (devido à relação)
+            if (encomenda.EncomendaPecas.Any())
+            {
+                _context.EncomendaPecas.RemoveRange(encomenda.EncomendaPecas);
+            }
+
+            // Remove a encomenda
             _context.Encomendas.Remove(encomenda);
             await _context.SaveChangesAsync();
-             await _hubContext.Clients.All.SendAsync("AtualizarEncomendas"); 
+
+            await _hubContext.Clients.All.SendAsync("AtualizarEncomendas");
+
             TempData["Success"] = "Encomenda eliminada com sucesso.";
             return RedirectToAction(nameof(Index));
         }

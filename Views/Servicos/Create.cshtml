@@ -178,11 +178,11 @@
     document.getElementById('pecasContainer').addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-remove-peca')) {
             var row = e.target.closest('.peca-row');
-            if (document.querySelectorAll('.peca-row').length > 1) {
+            //if (document.querySelectorAll('.peca-row').length > 1) {
                 row.remove();
                 calcularCustoTotal();
                 verificarStockZero();
-            }
+            //}
         }
     });
 
