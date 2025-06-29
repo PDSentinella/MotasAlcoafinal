@@ -36,6 +36,7 @@
                         <th>Data</th>
                         <th>Descrição</th>
                         <th>Custo Total</th>
+                        <th>Cliente</th>
                         <th>Motocicleta</th>
                         <th>Peças Usadas</th>
                         <th>Estado</th>
@@ -58,7 +59,8 @@
                                 <td>@servico.Data.ToString("dd/MM/yyyy")</td>
                                 <td>@servico.Descricao</td>
                                 <td>@servico.CustoTotal.ToString("C")</td>
-                                <td>@servico.Motocicleta?.Modelo</td>
+                                <td>@servico.Cliente?.Nome</td>
+                                <td>@servico.Motocicleta?.Matricula</td>
                                 <td>
                                     @if (servico.ServicoPecas != null && servico.ServicoPecas.Any())
                                     {
