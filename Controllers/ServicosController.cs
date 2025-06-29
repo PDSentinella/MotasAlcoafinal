@@ -168,6 +168,7 @@ namespace MotasAlcoafinal.Controllers
         {
             var servico = await _context.Servicos
                 .Include(s => s.Cliente)
+                .Include(s => s.Motocicleta)
                 .Include(s => s.ServicoPecas)
                 .ThenInclude(sp => sp.Peca)
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -181,7 +182,8 @@ namespace MotasAlcoafinal.Controllers
                 return RedirectToAction("Details", new { id });
             }
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", servico.ClienteId);
-            ViewBag.Motocicletas = new SelectList(_context.Motocicletas.Where(m => m.ClienteId == servico.ClienteId), "Id", "Modelo", servico.MotocicletaId);
+            ViewBag.Motocicletas = new SelectList(_context.Motocicletas.Where(m => m.ClienteId == servico.ClienteId).Select(m => new { m.Id, Nome = m.Modelo + " (" + m.Matricula + ")" }),
+    "Id", "Nome", servico.MotocicletaId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
@@ -198,7 +200,7 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Edit([Bind("Id,Descricao,Data,CustoTotal,MotocicletaId,Status")] Servicos servico)
+        public async Task<IActionResult> Edit([Bind("Id,Descricao,Data,CustoTotal,ClienteId,MotocicletaId,Status")] Servicos servico)
         {
             if (ModelState.IsValid)
             {
