@@ -33,6 +33,19 @@
                         <span class="text-muted">Sem motocicleta associada</span>
                     }
                 </dd>
+                <dt class="col-sm-3 fw-bold">Cliente:</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Cliente != null)
+                    {
+                        <a asp-action="Details" asp-controller="Clientes" asp-route-id="@Model.Cliente.Id" class="btn btn-outline-info">
+                            <i class="fas fa-user"></i> @Model.Cliente.Nome
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sem cliente associado</span>
+                    }
+                </dd>
             </dl>
         </div>
     </div>

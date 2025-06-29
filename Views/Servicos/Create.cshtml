@@ -11,6 +11,26 @@
         <div class="card-body">
             <form asp-action="Create" method="post">
                 <div class="mb-3">
+                    <label class="form-label fw-bold">Cliente</label>
+                    <select id="clienteSelect" name="ClienteId" class="form-select">
+                        <option value="">Selecione um cliente...</option>
+                        @foreach (var cliente in ViewBag.Clientes as SelectList)
+                        {
+                            <option value="@cliente.Value">@cliente.Text</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ClienteId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MotocicletaId" class="form-label fw-bold">Motocicleta (Matrícula)</label>
+                    <select asp-for="MotocicletaId" class="form-select" id="matriculaSelect">
+                        <option value="">Selecione um cliente primeiro...</option>
+                    </select>
+                    <span asp-validation-for="MotocicletaId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
                     <label asp-for="Descricao" class="form-label fw-bold">Descrição</label>
                     <input asp-for="Descricao" class="form-control" placeholder="Digite a descrição..." />
                     <span asp-validation-for="Descricao" class="text-danger"></span>
@@ -26,14 +46,6 @@
                     <label asp-for="CustoTotal" class="form-label fw-bold">Custo do serviço (não inclui peças) </label>
                     <input asp-for="CustoTotal" class="form-control" placeholder="Digite o custo do serviço..." id="custoServicoInput" />
                     <span asp-validation-for="CustoTotal" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="MotocicletaId" class="form-label fw-bold">Motocicleta</label>
-                    <select asp-for="MotocicletaId" class="form-select" asp-items="ViewBag.Motocicletas">
-                        <option value="">Selecione uma motocicleta...</option>
-                    </select>
-                    <span asp-validation-for="MotocicletaId" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
@@ -151,5 +163,24 @@
     document.getElementById('custoServicoInput').addEventListener('input', calcularCustoTotal);
     calcularCustoTotal();
     verificarStockZero();
+
+    // AJAX para buscar as motos do cliente
+    document.getElementById('clienteSelect').addEventListener('change', function() {
+        var clienteId = this.value;
+        var matriculaSelect = document.getElementById('matriculaSelect');
+        matriculaSelect.innerHTML = '<option value="">Carregando...</option>';
+        if (clienteId) {
+            fetch('/Servicos/GetMotocicletasByCliente/' + clienteId)
+                .then(response => response.json())
+                .then(data => {
+                    matriculaSelect.innerHTML = '<option value="">Selecione uma motocicleta...</option>';
+                    data.forEach(function(moto) {
+                        matriculaSelect.innerHTML += `<option value="${moto.id}">${moto.matricula} - ${moto.modelo}</option>`;
+                    });
+                });
+        } else {
+            matriculaSelect.innerHTML = '<option value="">Selecione um cliente primeiro...</option>';
+        }
+    });
 </script>
 }

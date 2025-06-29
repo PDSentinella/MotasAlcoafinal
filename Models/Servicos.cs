@@ -24,6 +24,12 @@ namespace motasAlcoafinal.Models
         public int? MotocicletaId { get; set; }
 
         /// <summary>
+        /// Identificador do cliente ao qual o serviço pertence
+        /// </summary>
+        [ForeignKey(nameof(Cliente))]
+        public int? ClienteId { get; set; }
+
+        /// <summary>
         /// Descrição do que é necessário ser feito no serviço
         /// </summary>
         public string Descricao { get; set; } = string.Empty;
@@ -62,6 +68,9 @@ namespace motasAlcoafinal.Models
 
         // Relacionamento: Um serviço pertence a uma motocicleta
         public Motocicletas? Motocicleta { get; set; }
+
+        // Relacionamento: Um serviço pertence a um cliente
+        public Clientes? Cliente { get; set; }
 
         // Relacionamento: Um serviço pode usar várias peças
         public ICollection<ServicoPecas> ServicoPecas { get; set; } = [];

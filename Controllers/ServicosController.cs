@@ -62,6 +62,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var servico = await _context.Servicos
+                .Include(s => s.Cliente)
                 .Include(s => s.Motocicleta)
                 .Include(s => s.ServicoPecas)
                 .ThenInclude(sp => sp.Peca)
@@ -79,7 +80,7 @@ namespace MotasAlcoafinal.Controllers
         [Authorize(Roles = "Mecanico,Root")]
         public IActionResult Create()
         {
-            ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo");
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome");
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
@@ -95,8 +96,18 @@ namespace MotasAlcoafinal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Mecanico,Root")]
-        public async Task<IActionResult> Create([Bind("Descricao, Data, CustoTotal, MotocicletaId")]Servicos servico, List<int> pecasIds, List<int> quantidades)
+        public async Task<IActionResult> Create([Bind("Descricao, Data, CustoTotal, MotocicletaId")]Servicos servico, int ClienteId, List<int> pecasIds, List<int> quantidades)
         {
+            if (ClienteId == 0)
+                ModelState.AddModelError("ClienteId", "Selecione um cliente.");
+            if (servico.MotocicletaId == null || servico.MotocicletaId == 0)
+                ModelState.AddModelError("MotocicletaId", "Selecione uma motocicleta.");
+            if (ClienteId > 0 && servico.MotocicletaId > 0)
+            {
+                var moto = await _context.Motocicletas.FirstOrDefaultAsync(m => m.Id == servico.MotocicletaId && m.ClienteId == ClienteId);
+                if (moto == null)
+                    ModelState.AddModelError("MotocicletaId", "A motocicleta selecionada não pertence ao cliente escolhido.");
+            }
             if (ModelState.IsValid)
             {
                 decimal totalPecas = 0;
@@ -114,18 +125,18 @@ namespace MotasAlcoafinal.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+                    ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", ClienteId);
                     ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
                     ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
                     ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
                     return View(servico);
                 }
                 servico.CustoTotal += totalPecas;
-                servico.Status = Servicos.ServicoEstado.Pendente; // Garante estado inicial
+                servico.Status = Servicos.ServicoEstado.Pendente;
+                servico.ClienteId = ClienteId;
                 _context.Add(servico);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.All.SendAsync("AtualizarServicos");
-
                 for (int i = 0; i < pecasIds.Count; i++)
                 {
                     var servicoPeca = new ServicoPecas
@@ -135,14 +146,12 @@ namespace MotasAlcoafinal.Controllers
                         QuantidadeUsada = quantidades[i]
                     };
                     _context.ServicoPecas.Add(servicoPeca);
-                    // Não subtrai estoque aqui!
                 }
                 await _context.SaveChangesAsync();
-
                 await _hubContext.Clients.All.SendAsync("AtualizarServicos");
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Motocicletas = new SelectList(_context.Motocicletas, "Id", "Modelo", servico.MotocicletaId);
+            ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nome", ClienteId);
             ViewBag.Pecas = new SelectList(_context.Pecas, "Id", "Nome");
             ViewBag.PecasData = _context.Pecas.ToDictionary(p => p.Id, p => p.Preco);
             ViewBag.PecasObj = _context.Pecas.ToDictionary(p => p.Id, p => p);
@@ -157,6 +166,7 @@ namespace MotasAlcoafinal.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var servico = await _context.Servicos
+                .Include(s => s.Cliente)
                 .Include(s => s.ServicoPecas)
                 .ThenInclude(sp => sp.Peca)
                 .FirstOrDefaultAsync(s => s.Id == id);
@@ -550,6 +560,20 @@ namespace MotasAlcoafinal.Controllers
             TempData["Success"] = "Serviço eliminado com sucesso.";
             await _hubContext.Clients.All.SendAsync("AtualizarServicos");
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// Obtém as motocicletas de um cliente via AJAX
+        /// </summary>
+        /// <param name="id">ID do cliente</param>
+        [HttpGet]
+        public async Task<IActionResult> GetMotocicletasByCliente(int id)
+        {
+            var motos = await _context.Motocicletas
+                .Where(m => m.ClienteId == id)
+                .Select(m => new { id = m.Id, matricula = m.Matricula, modelo = m.Modelo })
+                .ToListAsync();
+            return Json(motos);
         }
     }
 }
