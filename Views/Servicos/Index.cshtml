@@ -18,14 +18,56 @@
     <!-- Barra de Pesquisa -->
     <div class="card shadow-sm p-4 border-start border-4 border-danger mb-4 bg-light">
         <form asp-controller="Servicos" asp-action="Index" method="get">
-            <div class="input-group">
-                <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar serviços..." />
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-search me-1"></i> Pesquisar
-                </button>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <input type="text" name="searchString" value="@ViewBag.SearchString" class="form-control shadow-sm" placeholder="🔍 Pesquisar por cliente..." />
+                </div>
+                <div class="col-md-4">
+                    <select name="statusFilter" class="form-select shadow-sm" onchange="this.form.submit()">
+                        @if (string.IsNullOrEmpty(ViewBag.StatusFilter))
+                        {
+                            <option value="" selected>Todos os estados</option>
+                        }
+                        else
+                        {
+                            <option value="">Todos os estados</option>
+                        }
+                        @if ((string)ViewBag.StatusFilter == "Pendente")
+                        {
+                            <option value="Pendente" selected>Pendente</option>
+                        }
+                        else
+                        {
+                            <option value="Pendente">Pendente</option>
+                        }
+                        @if ((string)ViewBag.StatusFilter == "Concluido")
+                        {
+                            <option value="Concluido" selected>Concluído</option>
+                        }
+                        else
+                        {
+                            <option value="Concluido">Concluído</option>
+                        }
+                        @if ((string)ViewBag.StatusFilter == "Cancelado")
+                        {
+                            <option value="Cancelado" selected>Cancelado</option>
+                        }
+                        else
+                        {
+                            <option value="Cancelado">Cancelado</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-search me-1"></i> Pesquisar
+                    </button>
+                </div>
             </div>
         </form>
     </div>
+
+
 
     <!-- Tabela de Serviços -->
     <div class="card shadow-sm border-start border-4 border-primary mb-4">

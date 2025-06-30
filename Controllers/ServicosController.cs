@@ -28,14 +28,20 @@ namespace MotasAlcoafinal.Controllers
         /// <param name="pageNumber">Número da página</param>
         /// <param name="pageSize">Tamanho da página</param>
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, int pageNumber = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchString, string statusFilter, int pageNumber = 1, int pageSize = 10)
         {
             var servicos = from s in _context.Servicos
                            select s;
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                servicos = servicos.Where(s => s.Descricao.Contains(searchString));
+                servicos = servicos.Where(s => s.Cliente.Nome.Contains(searchString));
+            }
+            // Filtro pelo estado do serviço
+            if (!string.IsNullOrEmpty(statusFilter) &&
+                Enum.TryParse<motasAlcoafinal.Models.Servicos.ServicoEstado>(statusFilter, out var status))
+            {
+                servicos = servicos.Where(s => s.Status == status);
             }
 
             var totalServicos = await servicos.CountAsync();
@@ -51,6 +57,7 @@ namespace MotasAlcoafinal.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling(totalServicos / (double)pageSize);
             ViewBag.CurrentPage = pageNumber;
             ViewBag.SearchString = searchString;
+            ViewBag.StatusFilter = statusFilter;
 
             return View(servicosList);
         }
