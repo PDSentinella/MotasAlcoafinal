@@ -14,9 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Serviços ----------
 builder.Services.AddDbContext<MotasAlcoaContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure() // Resiliência a falhas transitórias
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")//,
+       // UseNpgsql => UseNpgsql.EnableRetryOnFailure() // Resiliência a falhas transitórias
     ));
 
 // Identity (utilizador e roles)
